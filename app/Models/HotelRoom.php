@@ -1,57 +1,86 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
+
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class HotelRoom
+ * 
+ * @property int $id
+ * @property int|null $hotel_id
+ * @property array|null $image_url
+ * @property string $title_ru
+ * @property string|null $title_kk
+ * @property string|null $title_en
+ * @property string|null $description_ru
+ * @property string|null $description_kk
+ * @property string|null $description_en
+ * @property int $bed_quantity
+ * @property float $room_size
+ * @property bool $air_conditioning
+ * @property bool $private_bathroom
+ * @property bool $tv
+ * @property bool $wifi
+ * @property bool $smoking_allowed
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * 
+ * @property Hotel|null $hotel
+ * @property Collection|RoomFacility[] $room_facilities
+ *
+ * @package App\Models
+ */
 class HotelRoom extends Model
 {
-    use SoftDeletes;
+	use SoftDeletes;
+	protected $table = 'hotel_rooms';
 
-    protected $fillable = [
-        'hotel_id',
-        'image_url',
-        'title_ru',
-        'title_kk',
-        'title_en',
-        'description_ru',
-        'description_kk',
-        'description_en',
-        'bed_quantity',
-        'room_size',
-        'air_conditioning',
-        'private_bathroom',
-        'tv',
-        'wifi',
-        'smoking_allowed',
-    ];
+	protected $casts = [
+		'hotel_id' => 'int',
+		'image_url' => 'json',
+		'bed_quantity' => 'int',
+		'room_size' => 'float',
+		'air_conditioning' => 'bool',
+		'private_bathroom' => 'bool',
+		'tv' => 'bool',
+		'wifi' => 'bool',
+		'smoking_allowed' => 'bool'
+	];
 
-    protected $casts = [
-        'image_url' => 'array',
-        'bed_quantity' => 'integer',
-        'room_size' => 'decimal:2',
-        'air_conditioning' => 'boolean',
-        'private_bathroom' => 'boolean',
-        'tv' => 'boolean',
-        'wifi' => 'boolean',
-        'smoking_allowed' => 'boolean',
-    ];
+	protected $fillable = [
+		'hotel_id',
+		'image_url',
+		'title_ru',
+		'title_kk',
+		'title_en',
+		'description_ru',
+		'description_kk',
+		'description_en',
+		'bed_quantity',
+		'room_size',
+		'air_conditioning',
+		'private_bathroom',
+		'tv',
+		'wifi',
+		'smoking_allowed'
+	];
 
-    /**
-     * Relationship with Hotel
-     */
-    public function hotel()
-    {
-        return $this->belongsTo(Hotel::class);
-    }
+	public function hotel()
+	{
+		return $this->belongsTo(Hotel::class);
+	}
 
-    /**
-     * Relationship with Facilities (many-to-many)
-     */
-    public function facilities()
-    {
-        return $this->belongsToMany(Facility::class, 'room_facilities', 'room_id', 'facility_id')
-            ->withTimestamps();
-    }
+	public function room_facilities()
+	{
+		return $this->hasMany(RoomFacility::class, 'room_id');
+	}
 }

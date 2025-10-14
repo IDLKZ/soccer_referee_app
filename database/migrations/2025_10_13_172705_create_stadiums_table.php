@@ -16,8 +16,8 @@ return new class extends Migration
             $table->text('image_url')->nullable();
             $table->foreignId('city_id')->nullable()->constrained('cities')->onDelete('set null');
             $table->string('title_ru', 255);
-            $table->string('title_kk', 255);
-            $table->string('title_en', 255);
+            $table->string('title_kk', 255)->nullable();
+            $table->string('title_en', 255)->nullable();
             $table->text('description_ru')->nullable();
             $table->text('description_kk')->nullable();
             $table->text('description_en')->nullable();

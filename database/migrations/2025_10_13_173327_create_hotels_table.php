@@ -16,12 +16,12 @@ return new class extends Migration
             $table->text('image_url')->nullable();
             $table->foreignId('city_id')->nullable()->constrained('cities')->onDelete('set null');
             $table->text('title_ru');
-            $table->text('title_kk');
-            $table->text('title_en');
+            $table->text('title_kk')->nullable();
+            $table->text('title_en')->nullable();
             $table->text('description_ru')->nullable();
             $table->text('description_kk')->nullable();
             $table->text('description_en')->nullable();
-            $table->integer('star');
+            $table->integer('star')->default(0);
             $table->text('email')->nullable();
             $table->text('address_ru')->nullable();
             $table->text('address_kk')->nullable();

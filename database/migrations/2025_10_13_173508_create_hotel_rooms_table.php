@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('hotel_id')->nullable()->constrained('hotels')->onDelete('set null');
             $table->json('image_url')->nullable();
             $table->text('title_ru');
-            $table->text('title_kk');
-            $table->text('title_en');
+            $table->text('title_kk')->nullable();
+            $table->text('title_en')->nullable();
             $table->text('description_ru')->nullable();
             $table->text('description_kk')->nullable();
             $table->text('description_en')->nullable();

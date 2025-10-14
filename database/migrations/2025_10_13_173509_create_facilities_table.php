@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
             $table->text('title_ru');
-            $table->text('title_kk');
-            $table->text('title_en');
+            $table->text('title_kk')->nullable();
+            $table->text('title_en')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
