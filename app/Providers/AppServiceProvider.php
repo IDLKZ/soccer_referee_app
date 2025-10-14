@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Добавляем middleware для Livewire для постоянной авторизации
+        Livewire::addPersistentMiddleware([
+            \App\Http\Middleware\EnsureUserHasRole::class,
+        ]);
     }
 }
