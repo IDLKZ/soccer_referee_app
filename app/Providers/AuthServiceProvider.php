@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Constants\RoleConstants;
-use App\Models\Match;
+use App\Models\MatchEntity;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Trip;
@@ -24,7 +24,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        Match::class => MatchPolicy::class,
+        MatchEntity::class => MatchPolicy::class,
         Trip::class => TripPolicy::class,
         Club::class => ClubPolicy::class,
         Stadium::class => StadiumPolicy::class,

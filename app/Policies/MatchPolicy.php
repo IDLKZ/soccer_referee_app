@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Constants\RoleConstants;
-use App\Models\Match;
+use App\Models\MatchEntity;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -29,7 +29,7 @@ class MatchPolicy
     /**
      * Determine whether the user can view the match.
      */
-    public function view(User $user, Match $match): bool
+    public function view(User $user, MatchEntity $match): bool
     {
         // Администраторы и руководители отделов могут видеть любой матч
         if (in_array($user->role->value, [
@@ -79,7 +79,7 @@ class MatchPolicy
     /**
      * Determine whether the user can update the match.
      */
-    public function update(User $user, Match $match): bool
+    public function update(User $user, MatchEntity $match): bool
     {
         return $user->role && in_array($user->role->value, [
             RoleConstants::ADMINISTRATOR,
@@ -91,7 +91,7 @@ class MatchPolicy
     /**
      * Determine whether the user can delete the match.
      */
-    public function delete(User $user, Match $match): bool
+    public function delete(User $user, MatchEntity $match): bool
     {
         return $user->role && in_array($user->role->value, [
             RoleConstants::ADMINISTRATOR,
@@ -102,7 +102,7 @@ class MatchPolicy
     /**
      * Determine whether the user can assign referees to the match.
      */
-    public function assignReferees(User $user, Match $match): bool
+    public function assignReferees(User $user, MatchEntity $match): bool
     {
         return $user->role && in_array($user->role->value, [
             RoleConstants::REFEREEING_DEPARTMENT_HEAD,
@@ -113,7 +113,7 @@ class MatchPolicy
     /**
      * Determine whether the user can manage match logistics.
      */
-    public function manageLogistics(User $user, Match $match): bool
+    public function manageLogistics(User $user, MatchEntity $match): bool
     {
         return $user->role && in_array($user->role->value, [
             RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
@@ -125,7 +125,7 @@ class MatchPolicy
     /**
      * Determine whether the user can create protocols for the match.
      */
-    public function createProtocol(User $user, Match $match): bool
+    public function createProtocol(User $user, MatchEntity $match): bool
     {
         // Судьи могут создавать протоколы только для матчей, где они назначены
         if ($user->role->value === RoleConstants::SOCCER_REFEREE) {
@@ -143,7 +143,7 @@ class MatchPolicy
     /**
      * Determine whether the user can approve match operations.
      */
-    public function approveOperations(User $user, Match $match): bool
+    public function approveOperations(User $user, MatchEntity $match): bool
     {
         return $user->role && in_array($user->role->value, [
             RoleConstants::REFEREEING_DEPARTMENT_HEAD,
