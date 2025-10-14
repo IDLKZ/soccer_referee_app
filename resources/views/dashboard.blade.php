@@ -7,10 +7,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Заголовок -->
         <div class="mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 Добро пожаловать, {{ Auth::user()->first_name }}!
             </h1>
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 Ваша роль: {{ Auth::user()->role->title_ru }}
             </p>
         </div>
@@ -18,7 +18,7 @@
         <!-- Статистика -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             @can('view-matches')
-            <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -28,10 +28,10 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                                     Всего матчей
                                 </dt>
-                                <dd class="text-lg font-medium text-gray-900">
+                                <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                     {{ \App\Models\MatchEntity::count() }}
                                 </dd>
                             </dl>
@@ -42,7 +42,7 @@
             @endcan
 
             @can('manage-referees')
-            <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -52,10 +52,10 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                                     Судьи
                                 </dt>
-                                <dd class="text-lg font-medium text-gray-900">
+                                <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                     {{ \App\Models\User::whereHas('role', function($q) {
                                         $q->where('value', \App\Constants\RoleConstants::SOCCER_REFEREE);
                                     })->count() }}
@@ -68,7 +68,7 @@
             @endcan
 
             @can('manage-finance')
-            <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -78,10 +78,10 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                                     Ожидают оплаты
                                 </dt>
-                                <dd class="text-lg font-medium text-gray-900">
+                                <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                     {{ \App\Models\ActOfPayment::where('status', 'pending')->count() }}
                                 </dd>
                             </dl>
@@ -92,7 +92,7 @@
             @endcan
 
             @can('manage-users')
-            <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -102,10 +102,10 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                                     Пользователи
                                 </dt>
-                                <dd class="text-lg font-medium text-gray-900">
+                                <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                     {{ \App\Models\User::count() }}
                                 </dd>
                             </dl>
@@ -117,9 +117,9 @@
         </div>
 
         <!-- Быстрые действия -->
-        <div class="bg-white shadow rounded-lg">
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
                     Быстрые действия
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -161,9 +161,9 @@
         <!-- Последние действия -->
         <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
             @can('view-matches')
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
                         Последние матчи
                     </h3>
                     @if(\App\Models\MatchEntity::count() > 0)
@@ -174,10 +174,10 @@
                         @foreach($recentMatches as $match)
                         <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                             <div>
-                                <p class="text-sm font-medium text-gray-900">
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                     {{ $match->title_ru ?? 'Матч ' . $match->id }}
                                 </p>
-                                <p class="text-xs text-gray-500">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ $match->match_date ? $match->match_date->format('d.m.Y H:i') : '' }}
                                 </p>
                             </div>
@@ -188,16 +188,16 @@
                         @endforeach
                     </div>
                     @else
-                    <p class="text-sm text-gray-500">Матчей пока нет</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Матчей пока нет</p>
                     @endif
                 </div>
             </div>
             @endcan
 
             @can('manage-finance')
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
                         Финансовые операции
                     </h3>
                     @if(\App\Models\ActOfPayment::count() > 0)
@@ -208,10 +208,10 @@
                         @foreach($recentPayments as $payment)
                         <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                             <div>
-                                <p class="text-sm font-medium text-gray-900">
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                     {{ $payment->workAct->judge->full_name ?? '-' }}
                                 </p>
-                                <p class="text-xs text-gray-500">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ number_format($payment->amount ?? 0, 2, ',', ' ') }} ₸
                                 </p>
                             </div>
@@ -225,7 +225,7 @@
                         @endforeach
                     </div>
                     @else
-                    <p class="text-sm text-gray-500">Финансовых операций пока нет</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Финансовых операций пока нет</p>
                     @endif
                 </div>
             </div>
