@@ -3,10 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\LocaleController;
 use App\Livewire\MatchManagement;
 use App\Livewire\RefereeManagement;
 use App\Livewire\UserManagement;
 use App\Livewire\FinanceManagement;
+
+// Переключение языка
+Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 // Главная страница
 Route::get('/', function () {
@@ -35,7 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Управление пользователями (только для административных ролей)
     Route::get('/users', UserManagement::class)
         ->name('users')
-        ->middleware('can:manage-users');
+        ->middleware("auth");
 
     // Управление судьями
     Route::get('/referees', RefereeManagement::class)
@@ -55,11 +59,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Административная панель
     Route::get('/admin', function () {
         return view('admin.dashboard');
-    })->name('admin.dashboard')
-        ->middleware('can:access-admin-panel');
+    })->name('admin.dashboard');
 
     // Профиль пользователя
     Route::get('/profile', function () {
         return view('profile');
     })->name('profile');
+
+    // Admin Routes
+    Route::prefix('admin')->name('admin.')->middleware('can:access-admin-panel')->group(function () {
+        // Roles CRUD
+        Route::resource('roles', \App\Http\Controllers\RoleController::class)->middleware('can:manage-roles');
+
+        // Users CRUD
+        Route::resource('users', \App\Http\Controllers\UserController::class)->middleware('can:manage-users');
+    });
 });

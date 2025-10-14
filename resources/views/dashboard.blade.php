@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(get_user_layout())
 
 @section('title', 'Панель управления')
 
@@ -32,7 +32,7 @@
                                     Всего матчей
                                 </dt>
                                 <dd class="text-lg font-medium text-gray-900">
-                                    {{ \App\Models\Match::count() }}
+                                    {{ \App\Models\MatchEntity::count() }}
                                 </dd>
                             </dl>
                         </div>
@@ -166,10 +166,10 @@
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
                         Последние матчи
                     </h3>
-                    @if(\App\Models\Match::count() > 0)
+                    @if(\App\Models\MatchEntity::count() > 0)
                     <div class="space-y-3">
                         @php
-                        $recentMatches = \App\Models\Match::with(['league', 'season'])->latest()->take(5)->get();
+                        $recentMatches = \App\Models\MatchEntity::with(['league', 'season'])->latest()->take(5)->get();
                         @endphp
                         @foreach($recentMatches as $match)
                         <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">

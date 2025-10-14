@@ -52,7 +52,7 @@
 
                         <!-- Администрирование -->
                         @can('access-admin-panel')
-                        <a href="{{ route('admin.dashboard') }}"
+                        <a href="{{ route('dashboard') }}"
                            class="{{ request()->routeIs('admin.*') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }}
                               inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors">
                             <i class="fas fa-cogs mr-2"></i>Администрирование
@@ -151,7 +151,7 @@
                 @endcan
 
                 @can('access-admin-panel')
-                <a href="{{ route('admin.dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.*') ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} text-base font-medium">
+                <a href="{{ route('dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.*') ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} text-base font-medium">
                     <i class="fas fa-cogs mr-2"></i>Администрирование
                 </a>
                 @endcan

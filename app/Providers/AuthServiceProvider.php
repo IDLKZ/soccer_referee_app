@@ -213,5 +213,150 @@ class AuthServiceProvider extends ServiceProvider
                 RoleConstants::ADMINISTRATOR,
             ]);
         });
+
+        // Управление услугами
+        Gate::define('manage-services', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::FINANCE_DEPARTMENT_HEAD,
+                RoleConstants::FINANCE_DEPARTMENT_SPECIALIST,
+                RoleConstants::REFEREEING_DEPARTMENT_ACCOUNTANT,
+            ]);
+        });
+
+        // Управление отелями
+        Gate::define('manage-hotels', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Управление лигами и сезонами
+        Gate::define('manage-leagues', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Просмотр аналитики
+        Gate::define('view-analytics', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::FINANCE_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Утверждение актов
+        Gate::define('approve-acts', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::FINANCE_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Управление бухгалтерией
+        Gate::define('manage-accounting', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_ACCOUNTANT,
+                RoleConstants::FINANCE_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Просмотр календаря
+        Gate::define('view-calendar', function (User $user) {
+            return $user->role !== null; // Все авторизованные пользователи
+        });
+
+        // Управление типами судей
+        Gate::define('manage-judge-types', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Просмотр логов
+        Gate::define('view-logs', function (User $user) {
+            return $user->role && $user->role->value === RoleConstants::ADMINISTRATOR;
+        });
+
+        // Управление ролями
+        Gate::define('manage-roles', function (User $user) {
+            return $user->role && $user->role->value === RoleConstants::ADMINISTRATOR;
+        });
+
+        // Просмотр собственных назначений (для судей)
+        Gate::define('view-own-assignments', function (User $user) {
+            return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
+        });
+
+        // Просмотр собственных поездок (для судей)
+        Gate::define('view-own-trips', function (User $user) {
+            return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
+        });
+
+        // Просмотр собственных выплат (для судей)
+        Gate::define('view-own-payments', function (User $user) {
+            return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
+        });
+
+        // Управление городами
+        Gate::define('manage-cities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+            ]);
+        });
+
+        // Управление транспортом
+        Gate::define('manage-transport', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Управление документами командировок
+        Gate::define('manage-trip-documents', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_ACCOUNTANT,
+            ]);
+        });
+
+        // Сверка платежей
+        Gate::define('reconcile-payments', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_ACCOUNTANT,
+                RoleConstants::FINANCE_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Просмотр производительности судей
+        Gate::define('view-referee-performance', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Согласование матчей
+        Gate::define('approve-matches', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
     }
 }
