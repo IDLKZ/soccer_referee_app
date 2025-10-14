@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class ActOfWork
- * 
+ *
  * @property int $id
  * @property int $match_id
  * @property int|null $protocol_id
@@ -34,7 +34,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * 
+ *
  * @property User $user
  * @property Match $match
  * @property Operation $operation
@@ -90,7 +90,7 @@ class ActOfWork extends Model
 
 	public function match()
 	{
-		return $this->belongsTo(Match::class);
+		return $this->belongsTo(MatchEntity::class);
 	}
 
 	public function operation()
