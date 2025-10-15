@@ -1,180 +1,235 @@
-<div class="container mx-auto p-6">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
-        <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Управление пользователями</h1>
-                @if($canCreate)
-                <button wire:click="$set('showCreateModal', true)"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
-                    <i class="fas fa-plus mr-2"></i>Создать пользователя
-                </button>
-                @endif
-            </div>
+<div class="container mx-auto px-6 py-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Управление пользователями</h1>
+            <p class="mt-1 text-sm text-gray-600">Управление учетными записями и ролями пользователей</p>
         </div>
-
-        @if(session()->has('message'))
-        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 m-4 rounded">
-            {{ session('message') }}
-        </div>
+        @if($canCreate)
+        <button wire:click="$set('showCreateModal', true)"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-150">
+            <i class="fas fa-plus mr-2"></i>
+            Создать пользователя
+        </button>
         @endif
+    </div>
 
-        <!-- Поиск и фильтры -->
-        <div class="p-6 border-b border-gray-200">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Поиск</label>
-                    <input type="text" wire:model.live.debounce.500ms="search" placeholder="Имя, email, телефон..."
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Роль</label>
-                    <select wire:model.live="filterRole" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Все роли</option>
-                        @foreach($roles as $role)
-                        <option value="{{ $role->id }}">{{ $role->title_ru }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Статус</label>
-                    <select wire:model.live="filterStatus" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Все</option>
-                        <option value="1">Активные</option>
-                        <option value="0">Неактивные</option>
-                    </select>
-                </div>
+    <!-- Success Messages -->
+    @if(session()->has('message'))
+    <div class="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded">
+        <div class="flex">
+            <i class="fas fa-check-circle text-green-500 mt-0.5"></i>
+            <p class="ml-3 text-green-700">{{ session('message') }}</p>
+        </div>
+    </div>
+    @endif
+
+    <!-- Поиск и фильтры -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-search mr-1 text-gray-400"></i>
+                    Поиск
+                </label>
+                <input type="text" wire:model.live.debounce.500ms="search" placeholder="Имя, email, телефон..."
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-tag mr-1 text-gray-400"></i>
+                    Роль
+                </label>
+                <select wire:model.live="filterRole" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    <option value="">Все роли</option>
+                    @foreach($roles as $role)
+                    <option value="{{ $role->id }}">{{ $role->title_ru }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-toggle-on mr-1 text-gray-400"></i>
+                    Статус
+                </label>
+                <select wire:model.live="filterStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    <option value="">Все</option>
+                    <option value="1">Активные</option>
+                    <option value="0">Неактивные</option>
+                </select>
             </div>
         </div>
+    </div>
 
-        <div class="p-6">
-            @if($users->count() > 0)
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+  <!-- Users Table -->
+    @if($users->count() > 0)
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center">
+                                <i class="fas fa-user mr-1 text-gray-400"></i>
                                 Пользователь
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center">
+                                <i class="fas fa-tag mr-1 text-gray-400"></i>
                                 Роль
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Контактные данные
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center">
+                                <i class="fas fa-address-card mr-1 text-gray-400"></i>
+                                Контакты
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-toggle-on mr-1 text-gray-400"></i>
                                 Статус
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-cogs mr-1 text-gray-400"></i>
                                 Действия
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
-                        @foreach($users as $user)
-                        <tr class="hover:bg-gray-50 dark:bg-gray-700">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        @if($user->image_url)
-                                        <img class="h-10 w-10 rounded-full" src="{{ $user->image_url }}" alt="">
-                                        @else
-                                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                            <span class="text-gray-600 font-medium">
-                                                {{ strtoupper(substr($user->first_name, 0, 1)) }}{{ strtoupper(substr($user->last_name, 0, 1)) }}
-                                            </span>
-                                        </div>
-                                        @endif
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            {{ $user->last_name }} {{ $user->first_name }}
-                                            @if($user->patronomic) {{ $user->patronomic }} @endif
-                                        </div>
-                                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ $user->username }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                                    {{ $user->role->title_ru ?? 'Без роли' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900 dark:text-gray-100">{{ $user->phone }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex space-x-2">
-                                    @if($user->is_active)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Активен
-                                    </span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-100">
+                    @foreach($users as $user)
+                    <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-150 border-l-4 border-transparent hover:border-blue-400">
+                        <td class="px-4 py-4">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    @if($user->image_url)
+                                    <img class="h-10 w-10 rounded-full border-2 border-white shadow-sm" src="{{ $user->image_url }}" alt="">
                                     @else
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        Неактивен
-                                    </span>
-                                    @endif
-                                    @if($user->is_verified)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        Подтвержден
-                                    </span>
+                                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-2 border-white shadow-sm">
+                                        <span class="text-white text-sm font-bold">
+                                            {{ strtoupper(substr($user->first_name, 0, 1)) }}{{ strtoupper(substr($user->last_name, 0, 1)) }}
+                                        </span>
+                                    </div>
                                     @endif
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex space-x-2">
-                                    @if($canEdit)
-                                        @if($user->id !== auth()->id())
-                                        <button wire:click="editUser({{ $user->id }})"
-                                                class="text-blue-600 hover:text-blue-900"
-                                                title="Редактировать">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        @endif
-                                        @if($user->id !== auth()->id())
-                                        <button wire:click="toggleUserStatus({{ $user->id }})"
-                                                class="text-yellow-600 hover:text-yellow-900"
-                                                title="{{ $user->is_active ? 'Деактивировать' : 'Активировать' }}">
-                                            <i class="fas fa-{{ $user->is_active ? 'ban' : 'check' }}"></i>
-                                        </button>
-                                        @endif
-                                    @endif
-                                    @if($canDelete && $user->id !== auth()->id())
-                                    <button wire:click="deleteUser({{ $user->id }})"
-                                            class="text-red-600 hover:text-red-900"
-                                            title="Удалить"
-                                            onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    @endif
+                                <div class="ml-4">
+                                    <div class="text-sm font-semibold text-gray-900">
+                                        {{ $user->last_name }} {{ $user->first_name }}
+                                        @if($user->patronomic) {{ $user->patronomic }} @endif
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        <i class="fas fa-at mr-1"></i>{{ $user->username }}
+                                    </div>
                                 </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            @if($user->role)
+                            <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 border border-indigo-200">
+                                <i class="fas fa-user-tag mr-1.5 text-indigo-600"></i>
+                                {{ $user->role->title_ru }}
+                            </span>
+                            @else
+                            <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                                <i class="fas fa-question-circle mr-1.5"></i>
+                                Без роли
+                            </span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center text-sm text-gray-900">
+                                    <i class="fas fa-phone mr-2 text-gray-400 text-xs"></i>
+                                    {{ $user->phone }}
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-envelope mr-2 text-gray-400 text-xs"></i>
+                                    {{ $user->email }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-center">
+                            <div class="flex items-center justify-center gap-1">
+                                @if($user->is_active)
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                                    <i class="fas fa-check-circle mr-1 text-green-600"></i>
+                                    Активен
+                                </span>
+                                @else
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border border-red-200">
+                                    <i class="fas fa-times-circle mr-1 text-red-600"></i>
+                                    Неактивен
+                                </span>
+                                @endif
+                                @if($user->is_verified)
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 border border-blue-200">
+                                    <i class="fas fa-shield-alt mr-1 text-blue-600"></i>
+                                    Подтвержден
+                                </span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                @if($canEdit && $user->id !== auth()->id())
+                                <button wire:click="editUser({{ $user->id }})"
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-800 transition-colors duration-150"
+                                        title="Редактировать">
+                                    <i class="fas fa-edit text-sm"></i>
+                                </button>
+                                @endif
+                                @if($canEdit && $user->id !== auth()->id())
+                                <button wire:click="toggleUserStatus({{ $user->id }})"
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg {{ $user->is_active ? 'bg-yellow-50 hover:bg-yellow-100 text-yellow-600 hover:text-yellow-800' : 'bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-800' }} transition-colors duration-150"
+                                        title="{{ $user->is_active ? 'Деактивировать' : 'Активировать' }}">
+                                    <i class="fas fa-{{ $user->is_active ? 'ban' : 'check' }} text-sm"></i>
+                                </button>
+                                @endif
+                                @if($canDelete && $user->id !== auth()->id())
+                                <button wire:click="deleteUser({{ $user->id }})"
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 transition-colors duration-150"
+                                        title="Удалить"
+                                        onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?')">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <!-- Пагинация -->
-            <div class="mt-4">
-                {{ $users->links() }}
-            </div>
-            @else
-            <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                <i class="fas fa-users text-4xl mb-4"></i>
-                <p>Пользователи не найдены</p>
-                @if($canCreate)
-                <p class="mt-2">
-                    <button wire:click="$set('showCreateModal', true)"
-                            class="text-blue-600 hover:text-blue-800 underline">
-                        Создайте первого пользователя
-                    </button>
-                </p>
-                @endif
-            </div>
+    <!-- Пагинация -->
+    @if($users->hasPages())
+    <div class="mt-8">
+        {{ $users->links('pagination::tailwind') }}
+    </div>
+    @endif
+    @else
+    <div class="text-center py-12">
+        <div class="flex flex-col items-center">
+            <i class="fas fa-users text-4xl text-gray-300 mb-3"></i>
+            <p class="text-gray-500 font-medium">Пользователи не найдены</p>
+            <p class="text-gray-400 text-sm mt-1">Попробуйте изменить параметры фильтрации</p>
+            @if($canCreate)
+            <p class="mt-4">
+                <button wire:click="$set('showCreateModal', true)"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-150">
+                    <i class="fas fa-plus mr-2"></i>
+                    Создать пользователя
+                </button>
+            </p>
             @endif
         </div>
     </div>
+    @endif
 
     <!-- Модальное окно создания пользователя -->
     @if($showCreateModal)

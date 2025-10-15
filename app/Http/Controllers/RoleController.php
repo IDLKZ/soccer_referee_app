@@ -13,7 +13,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::withCount('users')->orderBy('created_at', 'desc')->paginate(15);
+        $roles = Role::withCount('users')->orderBy('created_at', 'desc')->paginate(10);
         return view('admin.roles.index', compact('roles'));
     }
 
