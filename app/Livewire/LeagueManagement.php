@@ -6,6 +6,7 @@ use App\Models\League;
 use App\Models\Country;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
@@ -15,7 +16,7 @@ use Livewire\Attributes\Validate;
 #[Layout('layouts.admin')]
 class LeagueManagement extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $showCreateModal = false;
     public $showEditModal = false;
@@ -37,6 +38,12 @@ class LeagueManagement extends Component
     #[Validate('required|exists:countries,id')]
     public $countryId = '';
 
+    #[Validate('nullable|image|max:5120')] // max 5MB
+    public $image = null;
+
+    #[Validate('nullable|image|max:5120')] // max 5MB
+    public $editImage = null;
+
     #[Validate('required|string|max:255')]
     public $titleRu = '';
 
@@ -55,7 +62,7 @@ class LeagueManagement extends Component
     #[Validate('nullable|string')]
     public $descriptionEn = '';
 
-    #[Validate('required|string|max:10|unique:leagues,value')]
+    #[Validate('required|string|unique:leagues,value')]
     public $value = '';
 
     #[Validate('required|integer|min:1|max:10')]
@@ -148,7 +155,18 @@ class LeagueManagement extends Component
     {
         $this->authorize('create-leagues');
 
-        $this->validate();
+        $this->validate([
+            'countryId' => 'required|exists:countries,id',
+            'titleRu' => 'required|string|max:255',
+            'titleKk' => 'required|string|max:255',
+            'titleEn' => 'required|string|max:255',
+            'descriptionRu' => 'nullable|string',
+            'descriptionKk' => 'nullable|string',
+            'descriptionEn' => 'nullable|string',
+            'value' => 'required|string|unique:leagues,value',
+            'level' => 'required|integer|min:1|max:10',
+            'image' => 'nullable|image|max:5120',
+        ]);
 
         $league = League::create([
             'country_id' => $this->countryId,
@@ -163,6 +181,17 @@ class LeagueManagement extends Component
             'is_active' => (bool) $this->isActive,
         ]);
 
+        // Handle image upload
+        if ($this->image) {
+            $media = $league->addMedia($this->image->getRealPath())
+                  ->usingName($this->image->getClientOriginalName())
+                  ->usingFileName($this->image->getClientOriginalName())
+                  ->toMediaCollection('image');
+
+            // Update image_url field with relative path
+            $league->update(['image_url' => $media->getUrl()]);
+        }
+
         // Add selected media if any
         if (!empty($this->selectedMedia)) {
             foreach ($this->selectedMedia as $mediaId) {
@@ -174,7 +203,7 @@ class LeagueManagement extends Component
             }
         }
 
-        $this->reset(['selectedMedia', 'countryId', 'titleRu', 'titleKk', 'titleEn', 'descriptionRu', 'descriptionKk', 'descriptionEn', 'value', 'level', 'isActive', 'showCreateModal']);
+        $this->reset(['selectedMedia', 'countryId', 'titleRu', 'titleKk', 'titleEn', 'descriptionRu', 'descriptionKk', 'descriptionEn', 'value', 'level', 'isActive', 'showCreateModal', 'image']);
 
         session()->flash('message', 'Лига успешно создана');
 
@@ -217,8 +246,9 @@ class LeagueManagement extends Component
             'descriptionRu' => 'nullable|string',
             'descriptionKk' => 'nullable|string',
             'descriptionEn' => 'nullable|string',
-            'value' => 'required|string|max:10|unique:leagues,value,' . $this->editingLeagueId,
+            'value' => 'required|string|unique:leagues,value,' . $this->editingLeagueId,
             'level' => 'required|integer|min:1|max:10',
+            'editImage' => 'nullable|image|max:5120',
         ]);
 
         $league->update([
@@ -234,6 +264,19 @@ class LeagueManagement extends Component
             'is_active' => (bool) $this->isActive,
         ]);
 
+        // Handle image upload
+        if ($this->editImage) {
+            // Clear existing images and add new one
+            $league->clearMediaCollection('image');
+            $media = $league->addMedia($this->editImage->getRealPath())
+                  ->usingName($this->editImage->getClientOriginalName())
+                  ->usingFileName($this->editImage->getClientOriginalName())
+                  ->toMediaCollection('image');
+
+            // Update image_url field with relative path
+            $league->update(['image_url' => $media->getUrl()]);
+        }
+
         // Update image if new media is selected
         if (!empty($this->selectedMedia)) {
             $league->clearMediaCollection('image');
@@ -246,7 +289,7 @@ class LeagueManagement extends Component
             }
         }
 
-        $this->reset(['selectedMedia', 'countryId', 'titleRu', 'titleKk', 'titleEn', 'descriptionRu', 'descriptionKk', 'descriptionEn', 'value', 'level', 'isActive', 'showEditModal', 'editingLeagueId']);
+        $this->reset(['selectedMedia', 'countryId', 'titleRu', 'titleKk', 'titleEn', 'descriptionRu', 'descriptionKk', 'descriptionEn', 'value', 'level', 'isActive', 'showEditModal', 'editingLeagueId', 'editImage']);
 
         session()->flash('message', 'Лига успешно обновлена');
 
@@ -289,6 +332,19 @@ class LeagueManagement extends Component
         $league->save();
 
         session()->flash('message', 'Статус лиги изменен');
+    }
+
+    public function removeCurrentImage()
+    {
+        $this->authorize('manage-leagues');
+
+        $league = League::findOrFail($this->editingLeagueId);
+        $league->clearMediaCollection('image');
+
+        // Clear image_url field
+        $league->update(['image_url' => null]);
+
+        session()->flash('message', 'Изображение лиги удалено');
     }
 
     public function render()

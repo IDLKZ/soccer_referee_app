@@ -140,21 +140,21 @@
                     <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/30 transition-all duration-150 border-l-4 border-transparent hover:border-blue-400 dark:hover:border-blue-500">
                         <td class="px-4 py-4">
                             <div class="flex items-start space-x-3">
-                                <div class="flex-shrink-0 h-12 w-12">
-                                    @if($club->image_url)
-                                        @if(str($club->image_url)->startsWith('http'))
-                                        <img src="{{ $club->image_url }}" alt="{{ $club->short_name_ru }}" class="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600">
-                                        @else
-                                        <img src="{{ Storage::url($club->image_url) }}" alt="{{ $club->short_name_ru }}" class="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600">
-                                        @endif
+                                @if($club->getFirstMediaUrl('image'))
+                                    <img src="{{ $club->getFirstMediaUrl('image', 'thumb') }}" alt="{{ $club->short_name_ru }}" class="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600">
+                                @elseif($club->image_url)
+                                    @if(str($club->image_url)->startsWith('http'))
+                                    <img src="{{ $club->image_url }}" alt="{{ $club->short_name_ru }}" class="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600">
                                     @else
-                                        <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center border-2 border-white dark:border-gray-700 shadow-sm">
-                                            <span class="text-white text-sm font-bold">
-                                                {{ strtoupper(substr($club->short_name_ru, 0, 1)) }}
-                                            </span>
-                                        </div>
+                                    <img src="{{ Storage::url($club->image_url) }}" alt="{{ $club->short_name_ru }}" class="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600">
                                     @endif
+                                @else
+                                <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center border-2 border-white dark:border-gray-700 shadow-sm">
+                                    <span class="text-white text-sm font-bold">
+                                        {{ strtoupper(substr($club->short_name_ru, 0, 1)) }}
+                                    </span>
                                 </div>
+                                @endif
                                 <div class="flex-1 min-w-0">
                                     <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                                         {{ $club->short_name_ru }}
@@ -295,13 +295,40 @@
                             <!-- Изображение -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Логотип клуба</label>
-                                <x-file-uploader
-                                    name="imageUrl"
-                                    label="Загрузить логотип"
-                                    accept="image/*"
-                                    :max-size="5120"
-                                    :preview="true"
-                                />
+
+                                <!-- File Upload -->
+                                <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 transition-colors duration-200">
+                                    <input type="file"
+                                           wire:model="image"
+                                           accept="image/*"
+                                           class="hidden"
+                                           id="club-logo-upload-create">
+                                    <label for="club-logo-upload-create" class="cursor-pointer">
+                                        <div class="flex flex-col items-center">
+                                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-600 mb-3"></i>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                Нажмите для выбора логотипа или перетащите файл сюда
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500">
+                                                Поддерживаются форматы: JPG, PNG, GIF (макс. 5MB)
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                @if($image)
+                                    <div class="mt-4">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Выбранный логотип:</p>
+                                        <div class="relative inline-block">
+                                            <img src="{{ $image->temporaryUrl() }}" alt="Preview" class="h-32 w-32 object-cover rounded-lg shadow-md">
+                                            <button type="button"
+                                                    wire:click="$set('image', null)"
+                                                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                                                <i class="fas fa-times text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
                             <!-- Родительский клуб -->
@@ -501,14 +528,61 @@
                             <!-- Изображение -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Логотип клуба</label>
-                                <x-file-uploader
-                                    name="imageUrl"
-                                    label="Загрузить логотип"
-                                    accept="image/*"
-                                    :max-size="5120"
-                                    :preview="true"
-                                    :value="$editingClubId ? \App\Models\Club::find($editingClubId)?->image_url : ''"
-                                />
+
+                                <!-- Current Image -->
+                                @if($editingClubId)
+                                    @php
+                                        $club = \App\Models\Club::find($editingClubId);
+                                    @endphp
+                                    @if($club && $club->getFirstMediaUrl('image'))
+                                        <div class="mb-4">
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Текущий логотип:</p>
+                                            <div class="relative inline-block">
+                                                <img src="{{ $club->getFirstMediaUrl('image') }}" alt="Current club logo" class="h-32 w-32 object-cover rounded-lg shadow-md">
+                                                <button type="button"
+                                                        wire:click="removeCurrentImage"
+                                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                                                        title="Удалить логотип">
+                                                    <i class="fas fa-times text-xs"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endif
+
+                                <!-- Upload New Image -->
+                                <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 transition-colors duration-200">
+                                    <input type="file"
+                                           wire:model="editImage"
+                                           accept="image/*"
+                                           class="hidden"
+                                           id="club-logo-upload-edit">
+                                    <label for="club-logo-upload-edit" class="cursor-pointer">
+                                        <div class="flex flex-col items-center">
+                                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-600 mb-3"></i>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                Нажмите для выбора нового логотипа или перетащите файл сюда
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500">
+                                                Поддерживаются форматы: JPG, PNG, GIF (макс. 5MB)
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                @if($editImage)
+                                    <div class="mt-4">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Новый логотип:</p>
+                                        <div class="relative inline-block">
+                                            <img src="{{ $editImage->temporaryUrl() }}" alt="New logo preview" class="h-32 w-32 object-cover rounded-lg shadow-md">
+                                            <button type="button"
+                                                    wire:click="$set('editImage', null)"
+                                                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                                                <i class="fas fa-times text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
                             <!-- Родительский клуб -->

@@ -281,9 +281,42 @@
                             <!-- Изображение -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Изображение лиги</label>
-                                <x-livewire-filemanager />
-                                @error('selectedMedia') <span class="text-red-500 dark:text-red-400 text-xs">{{ $message }}</span> @enderror
-                            </div>
+
+                                <!-- File Upload -->
+                                <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 transition-colors duration-200 mb-4">
+                                    <input type="file"
+                                           wire:model="image"
+                                           accept="image/*"
+                                           class="hidden"
+                                           id="league-image-upload-create">
+                                    <label for="league-image-upload-create" class="cursor-pointer">
+                                        <div class="flex flex-col items-center">
+                                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-600 mb-3"></i>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                Нажмите для выбора изображения или перетащите файл сюда
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500">
+                                                Поддерживаются форматы: JPG, PNG, GIF (макс. 5MB)
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                @if($image)
+                                    <div class="mb-4">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Выбранное изображение:</p>
+                                        <div class="relative inline-block">
+                                            <img src="{{ $image->temporaryUrl() }}" alt="Preview" class="h-32 w-32 object-cover rounded-lg shadow-md">
+                                            <button type="button"
+                                                    wire:click="$set('image', null)"
+                                                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                                                <i class="fas fa-times text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                                            </div>
 
                             <div class="grid grid-cols-3 gap-4">
                                 <div>
@@ -409,21 +442,63 @@
                             <!-- Изображение -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Изображение лиги</label>
-                                <x-livewire-filemanager />
-                                @error('selectedMedia') <span class="text-red-500 dark:text-red-400 text-xs">{{ $message }}</span> @enderror
 
+                                <!-- Current Image -->
                                 @if($editingLeagueId)
                                     @php
                                         $league = \App\Models\League::find($editingLeagueId);
                                     @endphp
                                     @if($league && $league->getFirstMediaUrl('image'))
-                                        <div class="mt-3">
+                                        <div class="mb-4">
                                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Текущее изображение:</p>
-                                            <img src="{{ $league->getFirstMediaUrl('image') }}" alt="Current image" class="h-20 w-20 rounded-lg object-cover border border-gray-200 dark:border-gray-600">
+                                            <div class="relative inline-block">
+                                                <img src="{{ $league->getFirstMediaUrl('image') }}" alt="Current league image" class="h-32 w-32 object-cover rounded-lg shadow-md">
+                                                <button type="button"
+                                                        wire:click="removeCurrentImage"
+                                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                                                        title="Удалить изображение">
+                                                    <i class="fas fa-times text-xs"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     @endif
                                 @endif
-                            </div>
+
+                                <!-- Upload New Image -->
+                                <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 transition-colors duration-200 mb-4">
+                                    <input type="file"
+                                           wire:model="editImage"
+                                           accept="image/*"
+                                           class="hidden"
+                                           id="league-image-upload-edit">
+                                    <label for="league-image-upload-edit" class="cursor-pointer">
+                                        <div class="flex flex-col items-center">
+                                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-600 mb-3"></i>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                Нажмите для выбора нового изображения или перетащите файл сюда
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500">
+                                                Поддерживаются форматы: JPG, PNG, GIF (макс. 5MB)
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                @if($editImage)
+                                    <div class="mb-4">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Новое изображение:</p>
+                                        <div class="relative inline-block">
+                                            <img src="{{ $editImage->temporaryUrl() }}" alt="New image preview" class="h-32 w-32 object-cover rounded-lg shadow-md">
+                                            <button type="button"
+                                                    wire:click="$set('editImage', null)"
+                                                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
+                                                <i class="fas fa-times text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                                            </div>
 
                             <div class="grid grid-cols-3 gap-4">
                                 <div>

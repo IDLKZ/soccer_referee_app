@@ -36,7 +36,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  *
  * @property User $user
- * @property Match $match
+ * @property MatchEntity $match
  * @property Operation $operation
  * @property Protocol|null $protocol
  * @property Collection|ActOfPayment[] $act_of_payments

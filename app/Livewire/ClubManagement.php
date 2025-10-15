@@ -37,8 +37,13 @@ class ClubManagement extends Component
     public $clubTypes = [];
     public $parentClubs = [];
 
-    #[Validate('nullable|image|max:5120')]
-    public $imageUrl = null;
+    #[Validate('nullable|image|max:5120')] // max 5MB
+    public $image = null;
+
+    #[Validate('nullable|image|max:5120')] // max 5MB
+    public $editImage = null;
+
+    public $selectedMedia = [];
 
     #[Validate('nullable|integer|exists:clubs,id')]
     public $parentId = '';
@@ -206,16 +211,30 @@ class ClubManagement extends Component
     {
         $this->authorize('create-clubs');
 
-        $this->validate();
+        $this->validate([
+            'parentId' => 'nullable|integer|exists:clubs,id',
+            'cityId' => 'required|integer|exists:cities,id',
+            'typeId' => 'required|integer|exists:club_types,id',
+            'shortNameRu' => 'required|string|max:100',
+            'shortNameKk' => 'required|string|max:100',
+            'shortNameEn' => 'required|string|max:100',
+            'fullNameRu' => 'required|string|max:255',
+            'fullNameKk' => 'required|string|max:255',
+            'fullNameEn' => 'required|string|max:255',
+            'descriptionRu' => 'nullable|string',
+            'descriptionKk' => 'nullable|string',
+            'descriptionEn' => 'nullable|string',
+            'bin' => 'nullable|string|max:12',
+            'foundationDate' => 'nullable|date',
+            'addressRu' => 'nullable|string|max:500',
+            'addressKk' => 'nullable|string|max:500',
+            'addressEn' => 'nullable|string|max:500',
+            'phone' => 'nullable|array',
+            'website' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:5120',
+        ]);
 
-        // Обработка загрузки изображения
-        $imagePath = null;
-        if ($this->imageUrl) {
-            $imagePath = $this->imageUrl->store('clubs', 'public');
-        }
-
-        Club::create([
-            'image_url' => $imagePath,
+        $club = Club::create([
             'parent_id' => $this->parentId ?: null,
             'city_id' => $this->cityId,
             'type_id' => $this->typeId,
@@ -238,7 +257,18 @@ class ClubManagement extends Component
             'is_active' => (bool) $this->isActive,
         ]);
 
-        $this->reset(['imageUrl', 'parentId', 'cityId', 'typeId', 'shortNameRu', 'shortNameKk', 'shortNameEn', 'fullNameRu', 'fullNameKk', 'fullNameEn', 'descriptionRu', 'descriptionKk', 'descriptionEn', 'bin', 'foundationDate', 'addressRu', 'addressKk', 'addressEn', 'phone', 'website', 'isActive', 'showCreateModal']);
+        // Handle image upload
+        if ($this->image) {
+            $media = $club->addMedia($this->image->getRealPath())
+                  ->usingName($this->image->getClientOriginalName())
+                  ->usingFileName($this->image->getClientOriginalName())
+                  ->toMediaCollection('image');
+
+            // Update image_url field with relative path
+            $club->update(['image_url' => $media->getUrl()]);
+        }
+
+        $this->reset(['selectedMedia', 'image', 'parentId', 'cityId', 'typeId', 'shortNameRu', 'shortNameKk', 'shortNameEn', 'fullNameRu', 'fullNameKk', 'fullNameEn', 'descriptionRu', 'descriptionKk', 'descriptionEn', 'bin', 'foundationDate', 'addressRu', 'addressKk', 'addressEn', 'phone', 'website', 'isActive', 'showCreateModal']);
 
         session()->flash('message', 'Клуб успешно создан');
 
@@ -252,7 +282,8 @@ class ClubManagement extends Component
         $this->authorize('manage-clubs');
 
         $this->editingClubId = $club->id;
-        $this->imageUrl = null; // Для загрузки нового изображения
+        $this->selectedMedia = []; // For media selection
+        $this->editImage = null; // For new image upload
         $this->parentId = $club->parent_id;
         $this->cityId = $club->city_id;
         $this->typeId = $club->type_id;
@@ -284,7 +315,7 @@ class ClubManagement extends Component
         $club = Club::findOrFail($this->editingClubId);
 
         $this->validate([
-            'imageUrl' => 'nullable|image|max:5120',
+            'editImage' => 'nullable|image|max:5120',
             'parentId' => 'nullable|integer|exists:clubs,id',
             'cityId' => 'required|integer|exists:cities,id',
             'typeId' => 'required|integer|exists:club_types,id',
@@ -306,18 +337,7 @@ class ClubManagement extends Component
             'website' => 'nullable|string|max:255',
         ]);
 
-        // Обработка загрузки нового изображения
-        $imagePath = $club->image_url; // Сохраняем старое изображение
-        if ($this->imageUrl) {
-            // Удаляем старое изображение если есть
-            if ($club->image_url) {
-                \Storage::disk('public')->delete($club->image_url);
-            }
-            $imagePath = $this->imageUrl->store('clubs', 'public');
-        }
-
         $club->update([
-            'image_url' => $imagePath,
             'parent_id' => $this->parentId ?: null,
             'city_id' => $this->cityId,
             'type_id' => $this->typeId,
@@ -340,7 +360,20 @@ class ClubManagement extends Component
             'is_active' => (bool) $this->isActive,
         ]);
 
-        $this->reset(['imageUrl', 'parentId', 'cityId', 'typeId', 'shortNameRu', 'shortNameKk', 'shortNameEn', 'fullNameRu', 'fullNameKk', 'fullNameEn', 'descriptionRu', 'descriptionKk', 'descriptionEn', 'bin', 'foundationDate', 'addressRu', 'addressKk', 'addressEn', 'phone', 'website', 'isActive', 'showEditModal', 'editingClubId']);
+        // Handle image upload
+        if ($this->editImage) {
+            // Clear existing images and add new one
+            $club->clearMediaCollection('image');
+            $media = $club->addMedia($this->editImage->getRealPath())
+                  ->usingName($this->editImage->getClientOriginalName())
+                  ->usingFileName($this->editImage->getClientOriginalName())
+                  ->toMediaCollection('image');
+
+            // Update image_url field with relative path
+            $club->update(['image_url' => $media->getUrl()]);
+        }
+
+        $this->reset(['selectedMedia', 'editImage', 'parentId', 'cityId', 'typeId', 'shortNameRu', 'shortNameKk', 'shortNameEn', 'fullNameRu', 'fullNameKk', 'fullNameEn', 'descriptionRu', 'descriptionKk', 'descriptionEn', 'bin', 'foundationDate', 'addressRu', 'addressKk', 'addressEn', 'phone', 'website', 'isActive', 'showEditModal', 'editingClubId']);
 
         session()->flash('message', 'Клуб успешно обновлен');
 
@@ -366,10 +399,8 @@ class ClubManagement extends Component
             return;
         }
 
-        // Удаляем изображение если есть
-        if ($club->image_url) {
-            \Storage::disk('public')->delete($club->image_url);
-        }
+        // Delete associated media
+        $club->media()->delete();
 
         $club->delete();
 
@@ -385,6 +416,19 @@ class ClubManagement extends Component
         $club->save();
 
         session()->flash('message', 'Статус клуба изменен');
+    }
+
+    public function removeCurrentImage()
+    {
+        $this->authorize('manage-clubs');
+
+        $club = Club::findOrFail($this->editingClubId);
+        $club->clearMediaCollection('image');
+
+        // Clear image_url field
+        $club->update(['image_url' => null]);
+
+        session()->flash('message', 'Изображение клуба удалено');
     }
 
     public function render()
