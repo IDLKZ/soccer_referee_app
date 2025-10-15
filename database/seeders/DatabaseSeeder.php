@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             StadiumSeeder::class,
             ClubSeeder::class,
             UserSeeder::class,
+            FilemanagerRootFolderSeeder::class,
         ]);
     }
 }

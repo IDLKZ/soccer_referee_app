@@ -1,0 +1,8 @@
+Создадим Club CRUD как UserManagement создав вид на одной странице, CRUD через modal, тщательно изучи UserManagement user-management.blade.php и создай точно такой же но для Club, добавь также поддержку dark light theme для
+ club-management.blade.php
+resources/views/layouts/partials/sidebars/admin.blade.php добавим управление клубами сюда
+
+
+  - FileUploader - поддерживает загрузку изображений до 5MB
+  - TextEditor - простые textarea с placeholder и валидацией
+  - Image Preview - отображение текущих загруженных изображений

@@ -241,6 +241,20 @@ class AuthServiceProvider extends ServiceProvider
             ]);
         });
 
+        Gate::define('create-leagues', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        Gate::define('delete-leagues', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
         // Просмотр аналитики
         Gate::define('view-analytics', function (User $user) {
             return $user->role && in_array($user->role->value, [
@@ -312,6 +326,44 @@ class AuthServiceProvider extends ServiceProvider
                 RoleConstants::ADMINISTRATOR,
                 RoleConstants::REFEREEING_DEPARTMENT_HEAD,
                 RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+            ]);
+        });
+
+        Gate::define('create-cities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+            ]);
+        });
+
+        Gate::define('delete-cities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        Gate::define('manage-countries', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+            ]);
+        });
+
+        Gate::define('create-countries', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+            ]);
+        });
+
+        Gate::define('delete-countries', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
             ]);
         });
 

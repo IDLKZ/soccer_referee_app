@@ -8,6 +8,11 @@ use App\Livewire\MatchManagement;
 use App\Livewire\RefereeManagement;
 use App\Livewire\UserManagement;
 use App\Livewire\FinanceManagement;
+use App\Livewire\CountryManagement;
+use App\Livewire\CityManagement;
+use App\Livewire\LeagueManagement;
+use App\Livewire\SeasonManagement;
+use App\Livewire\ClubManagement;
 
 // Переключение языка
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
@@ -64,6 +69,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/matches', MatchManagement::class)
         ->name('matches')
         ->middleware('can:view-matches');
+
+    Route::get('/countries', CountryManagement::class)
+        ->name('countries')
+        ->middleware('can:manage-countries');
+
+    Route::get('/cities', CityManagement::class)
+        ->name('cities')
+        ->middleware('can:manage-cities');
+
+    Route::get('/leagues', LeagueManagement::class)
+        ->name('leagues')
+        ->middleware('can:manage-leagues');
+
+    Route::get('/seasons', SeasonManagement::class)
+        ->name('seasons')
+        ->middleware('can:manage-seasons');
+
+    Route::get('/clubs', ClubManagement::class)
+        ->name('clubs')
+        ->middleware('can:manage-clubs');
 
     // Финансовое управление
     Route::get('/finance', FinanceManagement::class)
