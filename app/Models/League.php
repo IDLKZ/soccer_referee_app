@@ -34,7 +34,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $deleted_at
  *
  * @property Country|null $country
- * @property Collection|Match[] $matches
+ * @property Collection|MatchEntity[] $matches
  * @property Collection|ProtocolRequirement[] $protocol_requirements
  *
  * @package App\Models

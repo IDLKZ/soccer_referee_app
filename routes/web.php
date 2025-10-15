@@ -13,6 +13,7 @@ use App\Livewire\CityManagement;
 use App\Livewire\LeagueManagement;
 use App\Livewire\SeasonManagement;
 use App\Livewire\ClubManagement;
+use App\Livewire\StadiumManagement;
 
 // Переключение языка
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
@@ -89,6 +90,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/clubs', ClubManagement::class)
         ->name('clubs')
         ->middleware('can:manage-clubs');
+
+    Route::get('/stadiums', function () {
+        return view('stadiums');
+    })->name('stadiums');
 
     // Финансовое управление
     Route::get('/finance', FinanceManagement::class)

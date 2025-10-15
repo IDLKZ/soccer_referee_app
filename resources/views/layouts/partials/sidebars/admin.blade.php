@@ -49,11 +49,13 @@
                 </a>
             @endcan
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-building w-5"></i>
-                <span class="ml-3">Стадионы</span>
-            </a>
+            @can('manage-stadiums')
+                <a href="{{ route('stadiums') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('stadiums*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-building w-5"></i>
+                    <span class="ml-3">Стадионы</span>
+                </a>
+            @endcan
 
             <!-- Match Management -->
             <div class="pt-4">
@@ -91,12 +93,6 @@
                     <span class="ml-3">Клубы</span>
                 </a>
             @endcan
-
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-building w-5"></i>
-                <span class="ml-3">Стадионы</span>
-            </a>
 
             <!-- Referees -->
             <div class="pt-4">

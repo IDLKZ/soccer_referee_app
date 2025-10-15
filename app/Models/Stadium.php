@@ -10,6 +10,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Class Stadium
@@ -38,13 +41,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @property City|null $city
  * @property Collection|Club[] $clubs
- * @property Collection|Match[] $matches
+ * @property Collection|MatchEntity[] $matches
  *
  * @package App\Models
  */
-class Stadium extends Model
+class Stadium extends Model implements HasMedia
 {
-	use SoftDeletes;
+	use SoftDeletes, InteractsWithMedia;
 	protected $table = 'stadiums';
 
 	protected $casts = [
@@ -65,6 +68,7 @@ class Stadium extends Model
 		'address_ru',
 		'address_kk',
 		'address_en',
+		'capacity',
 		'lat',
 		'lon',
 		'built_date',
@@ -89,4 +93,29 @@ class Stadium extends Model
 	{
 		return $this->hasMany(MatchEntity::class);
 	}
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('image')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+            ->singleFile()
+            ->useDisk('public')
+            ->registerMediaConversions(function (Media $media) {
+                $this
+                    ->addMediaConversion('thumb')
+                    ->width(100)
+                    ->height(100)
+                    ->sharpen(10)
+                    ->optimize()
+                    ->format('webp');
+
+                $this
+                    ->addMediaConversion('medium')
+                    ->width(400)
+                    ->height(400)
+                    ->sharpen(10)
+                    ->optimize()
+                    ->format('webp');
+            });
+    }
 }
