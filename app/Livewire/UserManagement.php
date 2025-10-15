@@ -6,6 +6,7 @@ use App\Constants\RoleConstants;
 use App\Models\User;
 use App\Models\Role;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
@@ -13,10 +14,18 @@ use Livewire\Attributes\Validate;
 #[Title('Управление пользователями')]
 class UserManagement extends Component
 {
-    public $users = [];
+    use WithPagination;
+
     public $roles = [];
     public $showCreateModal = false;
+    public $showEditModal = false;
+    public $editingUserId = null;
     public $selectedUser = null;
+
+    // Поиск и фильтрация
+    public $search = '';
+    public $filterRole = '';
+    public $filterStatus = '';
 
     #[Validate('required|string|max:255')]
     public $lastName = '';
@@ -35,6 +44,9 @@ class UserManagement extends Component
 
     #[Validate('required|email|unique:users,email')]
     public $email = '';
+
+    #[Validate('required|string|max:255|unique:users,username')]
+    public $username = '';
 
     #[Validate('required|exists:roles,id')]
     public $roleId = '';
@@ -63,13 +75,49 @@ class UserManagement extends Component
         $this->canEdit = $user->can('manage-users');
         $this->canDelete = $user->role->value === RoleConstants::ADMINISTRATOR;
 
-        $this->loadUsers();
         $this->loadRoles();
     }
 
-    public function loadUsers()
+    public function updatingSearch()
     {
-        $this->users = User::with('role')->get();
+        $this->resetPage();
+    }
+
+    public function updatingFilterRole()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterStatus()
+    {
+        $this->resetPage();
+    }
+
+    public function getUsers()
+    {
+        $query = User::with('role');
+
+        // Поиск
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('first_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('email', 'like', '%' . $this->search . '%')
+                  ->orWhere('phone', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        // Фильтр по роли
+        if ($this->filterRole) {
+            $query->where('role_id', $this->filterRole);
+        }
+
+        // Фильтр по статусу
+        if ($this->filterStatus !== '') {
+            $query->where('is_active', $this->filterStatus);
+        }
+
+        return $query->paginate(10);
     }
 
     public function loadRoles()
@@ -91,23 +139,74 @@ class UserManagement extends Component
             'iin' => $this->iin,
             'phone' => $this->phone,
             'email' => $this->email,
+            'username' => $this->username,
             'sex' => $this->sex,
-            'birth_date' => $this->birthDate,
+            'birth_date' => $this->birthDate ?: null,
             'is_active' => true,
             'is_verified' => false,
             'password_hash' => bcrypt('admin123'), // Пароль по умолчанию
         ]);
 
-        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'roleId', 'sex', 'birthDate', 'showCreateModal']);
-        $this->loadUsers();
+        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'username', 'roleId', 'sex', 'birthDate', 'showCreateModal']);
 
         session()->flash('message', 'Пользователь успешно создан');
     }
 
     public function editUser($userId)
     {
-        $this->selectedUser = User::findOrFail($userId);
-        $this->authorize('edit-own-profile', $this->selectedUser);
+        $user = User::findOrFail($userId);
+        $this->authorize('manage-users');
+
+        $this->editingUserId = $user->id;
+        $this->lastName = $user->last_name;
+        $this->firstName = $user->first_name;
+        $this->patronomic = $user->patronomic;
+        $this->iin = $user->iin;
+        $this->phone = $user->phone;
+        $this->email = $user->email;
+        $this->username = $user->username;
+        $this->roleId = $user->role_id;
+        $this->sex = $user->sex;
+        $this->birthDate = $user->birth_date ? $user->birth_date->format('Y-m-d') : '';
+
+        $this->showEditModal = true;
+    }
+
+    public function updateUser()
+    {
+        $this->authorize('manage-users');
+
+        $user = User::findOrFail($this->editingUserId);
+
+        $this->validate([
+            'lastName' => 'required|string|max:255',
+            'firstName' => 'required|string|max:255',
+            'patronomic' => 'nullable|string|max:255',
+            'iin' => 'required|string|max:12|unique:users,iin,' . $this->editingUserId,
+            'phone' => 'required|string|max:20|unique:users,phone,' . $this->editingUserId,
+            'email' => 'required|email|unique:users,email,' . $this->editingUserId,
+            'username' => 'required|string|max:255|unique:users,username,' . $this->editingUserId,
+            'roleId' => 'required|exists:roles,id',
+            'sex' => 'required|integer|min:1|max:2',
+            'birthDate' => 'nullable|date',
+        ]);
+
+        $user->update([
+            'role_id' => $this->roleId,
+            'last_name' => $this->lastName,
+            'first_name' => $this->firstName,
+            'patronomic' => $this->patronomic,
+            'iin' => $this->iin,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'username' => $this->username,
+            'sex' => $this->sex,
+            'birth_date' => $this->birthDate ?: null,
+        ]);
+
+        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'username', 'roleId', 'sex', 'birthDate', 'showEditModal', 'editingUserId']);
+
+        session()->flash('message', 'Пользователь успешно обновлен');
     }
 
     public function deleteUser($userId)
@@ -123,7 +222,6 @@ class UserManagement extends Component
         }
 
         $user->delete();
-        $this->loadUsers();
 
         session()->flash('message', 'Пользователь успешно удален');
     }
@@ -136,13 +234,13 @@ class UserManagement extends Component
         $user->is_active = !$user->is_active;
         $user->save();
 
-        $this->loadUsers();
         session()->flash('message', 'Статус пользователя изменен');
     }
 
     public function render()
     {
-        return view('livewire.user-management')
-            ->layout('layouts.app');
+        return view('livewire.user-management', [
+            'users' => $this->getUsers(),
+        ])->layout('layouts.app');
     }
 }

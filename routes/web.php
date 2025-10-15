@@ -31,14 +31,28 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
 
 // Защищенные маршруты
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Debug route
+    Route::get('/debug-auth', function () {
+        $user = auth()->user();
+        return response()->json([
+            'user_id' => $user->id,
+            'has_role' => $user->role ? true : false,
+            'role_value' => $user->role ? $user->role->value : null,
+            'is_administrator' => $user->role && $user->role->value === \App\Constants\RoleConstants::ADMINISTRATOR,
+            'can_manage_users' => \Illuminate\Support\Facades\Gate::allows('manage-users'),
+            'can_create_users' => \Illuminate\Support\Facades\Gate::allows('create-users'),
+        ]);
+    });
+
     // Панель управления
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
     // Управление пользователями (только для административных ролей)
-    Route::get('/users', UserManagement::class)
-        ->name('users')
+    Route::get('/users', function () {
+        return view('users');
+    })->name('users')
         ->middleware("auth");
 
     // Управление судьями

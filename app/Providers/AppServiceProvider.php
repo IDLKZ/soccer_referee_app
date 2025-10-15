@@ -20,9 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Добавляем middleware для Livewire для постоянной авторизации
-        Livewire::addPersistentMiddleware([
-            \App\Http\Middleware\EnsureUserHasRole::class,
-        ]);
+        // Livewire components handle their own authorization via Gates
     }
 }

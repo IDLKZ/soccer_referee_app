@@ -16,14 +16,14 @@
                 </p>
             </div>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <a href="{{ route('users') }}"
+               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('users') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                 <i class="fas fa-users w-5"></i>
                 <span class="ml-3">Пользователи</span>
             </a>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <a href="{{ route('admin.roles.index') }}"
+               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('admin.roles.*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                 <i class="fas fa-user-shield w-5"></i>
                 <span class="ml-3">Роли и права</span>
             </a>
@@ -41,8 +41,8 @@
                 </p>
             </div>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <a href="{{ route('matches') }}"
+               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('matches') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                 <i class="fas fa-calendar-alt w-5"></i>
                 <span class="ml-3">Матчи</span>
             </a>
@@ -72,8 +72,8 @@
                 </p>
             </div>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <a href="{{ route('referees') }}"
+               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('referees') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                 <i class="fas fa-user-tie w-5"></i>
                 <span class="ml-3">Судьи</span>
             </a>
@@ -91,8 +91,8 @@
                 </p>
             </div>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <a href="{{ route('finance') }}"
+               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('finance') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                 <i class="fas fa-money-check-alt w-5"></i>
                 <span class="ml-3">Финансы</span>
             </a>
