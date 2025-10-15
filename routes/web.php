@@ -17,6 +17,11 @@ use App\Livewire\StadiumManagement;
 use App\Livewire\ClubStadiumManagement;
 use App\Livewire\HotelManagement;
 use App\Livewire\HotelRoomManagement;
+use App\Livewire\TransportTypeManagement;
+use App\Livewire\CategoryOperationManagement;
+use App\Livewire\OperationManagement;
+use App\Livewire\FacilityManagement;
+use App\Livewire\RoomFacilityManagement;
 
 // Переключение языка
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
@@ -109,6 +114,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hotel-rooms', HotelRoomManagement::class)
         ->name('hotel-rooms')
         ->middleware('can:manage-hotel-rooms');
+
+    Route::get('/transport-types', TransportTypeManagement::class)
+        ->name('transport-types')
+        ->middleware('can:manage-transport-types');
+
+    Route::get('/category-operations', CategoryOperationManagement::class)
+        ->name('category-operations')
+        ->middleware('can:manage-category-operations');
+
+    Route::get('/operations', OperationManagement::class)
+        ->name('operations')
+        ->middleware('can:manage-operations');
+
+    Route::get('/facilities', FacilityManagement::class)
+        ->name('facilities')
+        ->middleware('can:manage-facilities');
+
+    Route::get('/room-facilities', RoomFacilityManagement::class)
+        ->name('room-facilities')
+        ->middleware('can:manage-room-facilities');
 
     // Финансовое управление
     Route::get('/finance', FinanceManagement::class)

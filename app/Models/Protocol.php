@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  *
  * @property User $user
- * @property Match $match
+ * @property MatchEntity $match
  * @property Operation $operation
  * @property ProtocolRequirement $protocol_requirement
  * @property Collection|ActOfWork[] $act_of_works

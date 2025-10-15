@@ -33,7 +33,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @property JudgeType $judge_type
  * @property League $league
- * @property Match|null $match
+ * @property MatchEntity|null $match
  * @property Collection|Protocol[] $protocols
  *
  * @package App\Models

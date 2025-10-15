@@ -40,7 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|MatchDeadline[] $match_deadlines
  * @property Collection|MatchFlow[] $match_flows
  * @property Collection|MatchFlowsStage[] $match_flows_stages
- * @property Collection|Match[] $matches
+ * @property Collection|MatchEntity[] $matches
  * @property Collection|Operation[] $operations
  * @property Collection|Protocol[] $protocols
  * @property Collection|Trip[] $trips
