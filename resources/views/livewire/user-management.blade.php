@@ -23,7 +23,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Поиск</label>
-                    <input type="text" wire:model.live="search" placeholder="Имя, email, телефон..."
+                    <input type="text" wire:model.live.debounce.500ms="search" placeholder="Имя, email, телефон..."
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
@@ -123,24 +123,28 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
-                                    @if($canEdit && $user->id !== auth()->id())
-                                    <button wire:click="editUser({{ $user->id }})"
-                                            class="text-blue-600 hover:text-blue-900">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
+                                    @if($canEdit)
+                                        @if($user->id !== auth()->id())
+                                        <button wire:click="editUser({{ $user->id }})"
+                                                class="text-blue-600 hover:text-blue-900"
+                                                title="Редактировать">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        @endif
+                                        @if($user->id !== auth()->id())
+                                        <button wire:click="toggleUserStatus({{ $user->id }})"
+                                                class="text-yellow-600 hover:text-yellow-900"
+                                                title="{{ $user->is_active ? 'Деактивировать' : 'Активировать' }}">
+                                            <i class="fas fa-{{ $user->is_active ? 'ban' : 'check' }}"></i>
+                                        </button>
+                                        @endif
                                     @endif
                                     @if($canDelete && $user->id !== auth()->id())
                                     <button wire:click="deleteUser({{ $user->id }})"
                                             class="text-red-600 hover:text-red-900"
+                                            title="Удалить"
                                             onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?')">
                                         <i class="fas fa-trash"></i>
-                                    </button>
-                                    @endif
-                                    @if($canEdit && $user->id !== auth()->id())
-                                    <button wire:click="toggleUserStatus({{ $user->id }})"
-                                            class="text-yellow-600 hover:text-yellow-900"
-                                            title="{{ $user->is_active ? 'Деактивировать' : 'Активировать' }}">
-                                        <i class="fas fa-{{ $user->is_active ? 'ban' : 'check' }}"></i>
                                     </button>
                                     @endif
                                 </div>
@@ -174,11 +178,13 @@
 
     <!-- Модальное окно создания пользователя -->
     @if($showCreateModal)
-    <div class="fixed inset-0 z-50 overflow-y-auto">
+    <div wire:ignore.self class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" wire:click="$set('showCreateModal', false)">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
                 <form wire:submit.prevent="createUser">
@@ -276,11 +282,13 @@
 
     <!-- Модальное окно редактирования пользователя -->
     @if($showEditModal)
-    <div class="fixed inset-0 z-50 overflow-y-auto">
+    <div wire:ignore.self class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" wire:click="$set('showEditModal', false)">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
                 <form wire:submit.prevent="updateUser">

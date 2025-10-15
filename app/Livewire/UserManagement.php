@@ -9,9 +9,11 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление пользователями')]
+#[Layout('layouts.admin')]
 class UserManagement extends Component
 {
     use WithPagination;
@@ -26,6 +28,8 @@ class UserManagement extends Component
     public $search = '';
     public $filterRole = '';
     public $filterStatus = '';
+
+    protected $paginationTheme = 'tailwind';
 
     #[Validate('required|string|max:255')]
     public $lastName = '';
@@ -78,17 +82,17 @@ class UserManagement extends Component
         $this->loadRoles();
     }
 
-    public function updatingSearch()
+    public function updatedSearch()
     {
         $this->resetPage();
     }
 
-    public function updatingFilterRole()
+    public function updatedFilterRole()
     {
         $this->resetPage();
     }
 
-    public function updatingFilterStatus()
+    public function updatedFilterStatus()
     {
         $this->resetPage();
     }
@@ -108,13 +112,13 @@ class UserManagement extends Component
         }
 
         // Фильтр по роли
-        if ($this->filterRole) {
+        if (!empty($this->filterRole)) {
             $query->where('role_id', $this->filterRole);
         }
 
         // Фильтр по статусу
-        if ($this->filterStatus !== '') {
-            $query->where('is_active', $this->filterStatus);
+        if ($this->filterStatus !== '' && $this->filterStatus !== null) {
+            $query->where('is_active', $this->filterStatus === '1');
         }
 
         return $query->paginate(10);
@@ -150,6 +154,9 @@ class UserManagement extends Component
         $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'username', 'roleId', 'sex', 'birthDate', 'showCreateModal']);
 
         session()->flash('message', 'Пользователь успешно создан');
+
+        // Перерисовываем компонент
+        $this->render();
     }
 
     public function editUser($userId)
@@ -207,6 +214,9 @@ class UserManagement extends Component
         $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'username', 'roleId', 'sex', 'birthDate', 'showEditModal', 'editingUserId']);
 
         session()->flash('message', 'Пользователь успешно обновлен');
+
+        // Перерисовываем компонент
+        $this->render();
     }
 
     public function deleteUser($userId)
@@ -241,6 +251,6 @@ class UserManagement extends Component
     {
         return view('livewire.user-management', [
             'users' => $this->getUsers(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

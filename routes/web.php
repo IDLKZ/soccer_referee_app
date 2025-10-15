@@ -53,7 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users', function () {
         return view('users');
     })->name('users')
-        ->middleware("auth");
+        ->middleware('auth');
 
     // Управление судьями
     Route::get('/referees', RefereeManagement::class)

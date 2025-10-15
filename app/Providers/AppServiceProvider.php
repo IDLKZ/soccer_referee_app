@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Livewire;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,5 +22,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Livewire components handle their own authorization via Gates
+
+        // Use Tailwind CSS for pagination
+        Paginator::useTailwind();
     }
 }
