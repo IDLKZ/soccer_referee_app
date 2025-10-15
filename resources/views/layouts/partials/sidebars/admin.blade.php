@@ -57,6 +57,14 @@
                 </a>
             @endcan
 
+            @can('manage-club-stadiums')
+                <a href="{{ route('club-stadiums') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('club-stadiums*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-link w-5"></i>
+                    <span class="ml-3">Связи клубов и стадионов</span>
+                </a>
+            @endcan
+
             <!-- Match Management -->
             <div class="pt-4">
                 <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
@@ -161,11 +169,21 @@
                 <span class="ml-3">Командировки</span>
             </a>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-hotel w-5"></i>
-                <span class="ml-3">Отели</span>
-            </a>
+            @can('manage-hotels')
+                <a href="{{ route('hotels') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('hotels*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-hotel w-5"></i>
+                    <span class="ml-3">Отели</span>
+                </a>
+            @endcan
+
+            @can('manage-hotel-rooms')
+                <a href="{{ route('hotel-rooms') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('hotel-rooms*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-bed w-5"></i>
+                    <span class="ml-3">Номера отелей</span>
+                </a>
+            @endcan
 
             <!-- Reports -->
             <div class="pt-4">

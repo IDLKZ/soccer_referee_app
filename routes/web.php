@@ -14,6 +14,9 @@ use App\Livewire\LeagueManagement;
 use App\Livewire\SeasonManagement;
 use App\Livewire\ClubManagement;
 use App\Livewire\StadiumManagement;
+use App\Livewire\ClubStadiumManagement;
+use App\Livewire\HotelManagement;
+use App\Livewire\HotelRoomManagement;
 
 // Переключение языка
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
@@ -94,6 +97,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/stadiums', function () {
         return view('stadiums');
     })->name('stadiums');
+
+    Route::get('/club-stadiums', ClubStadiumManagement::class)
+        ->name('club-stadiums')
+        ->middleware('can:manage-club-stadiums');
+
+    Route::get('/hotels', HotelManagement::class)
+        ->name('hotels')
+        ->middleware('can:manage-hotels');
+
+    Route::get('/hotel-rooms', HotelRoomManagement::class)
+        ->name('hotel-rooms')
+        ->middleware('can:manage-hotel-rooms');
 
     // Финансовое управление
     Route::get('/finance', FinanceManagement::class)
