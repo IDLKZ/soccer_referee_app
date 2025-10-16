@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\ProfileController;
 use App\Livewire\MatchManagement;
 use App\Livewire\RefereeManagement;
 use App\Livewire\UserManagement;
@@ -146,9 +147,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('admin.dashboard');
 
     // Профиль пользователя
-    Route::get('/profile', function () {
-        return view('profile');
-    })->name('profile');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::put('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 
     // Admin Routes
     Route::prefix('admin')->name('admin.')->middleware('can:access-admin-panel')->group(function () {
