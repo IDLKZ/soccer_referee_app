@@ -7,8 +7,8 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Управление ролями</h1>
-            <p class="mt-1 text-sm text-gray-600">Управление ролями и правами доступа</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Управление ролями</h1>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Управление ролями и правами доступа</p>
         </div>
         @can('manage-roles')
         <a href="{{ route('admin.roles.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
@@ -20,76 +20,76 @@
 
     <!-- Success/Error Messages -->
     @if(session('success'))
-    <div class="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded">
+    <div class="mb-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 dark:border-green-400 p-4 rounded">
         <div class="flex">
-            <i class="fas fa-check-circle text-green-500 mt-0.5"></i>
-            <p class="ml-3 text-green-700">{{ session('success') }}</p>
+            <i class="fas fa-check-circle text-green-500 dark:text-green-400 mt-0.5"></i>
+            <p class="ml-3 text-green-700 dark:text-green-300">{{ session('success') }}</p>
         </div>
     </div>
     @endif
 
     @if(session('error'))
-    <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+    <div class="mb-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 dark:border-red-400 p-4 rounded">
         <div class="flex">
-            <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
-            <p class="ml-3 text-red-700">{{ session('error') }}</p>
+            <i class="fas fa-exclamation-circle text-red-500 dark:text-red-400 mt-0.5"></i>
+            <p class="ml-3 text-red-700 dark:text-red-300">{{ session('error') }}</p>
         </div>
     </div>
     @endif
 
     <!-- Roles Table -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center">
-                                <i class="fas fa-hashtag mr-1 text-gray-400"></i>
+                                <i class="fas fa-hashtag mr-1 text-gray-400 dark:text-gray-500"></i>
                                 ID
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center">
-                                <i class="fas fa-tag mr-1 text-gray-400"></i>
+                                <i class="fas fa-tag mr-1 text-gray-400 dark:text-gray-500"></i>
                                 Название
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center">
-                                <i class="fas fa-code mr-1 text-gray-400"></i>
+                                <i class="fas fa-code mr-1 text-gray-400 dark:text-gray-500"></i>
                                 Значение
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center justify-center">
-                                <i class="fas fa-users mr-1 text-gray-400"></i>
+                                <i class="fas fa-users mr-1 text-gray-400 dark:text-gray-500"></i>
                                 Пользователей
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center justify-center">
-                                <i class="fas fa-toggle-on mr-1 text-gray-400"></i>
+                                <i class="fas fa-toggle-on mr-1 text-gray-400 dark:text-gray-500"></i>
                                 Статус
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center justify-center">
-                                <i class="fas fa-layer-group mr-1 text-gray-400"></i>
+                                <i class="fas fa-layer-group mr-1 text-gray-400 dark:text-gray-500"></i>
                                 Тип
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center justify-center">
-                                <i class="fas fa-cogs mr-1 text-gray-400"></i>
+                                <i class="fas fa-cogs mr-1 text-gray-400 dark:text-gray-500"></i>
                                 Действия
                             </div>
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-100">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse($roles as $role)
-                    <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-150 border-l-4 border-transparent hover:border-blue-400">
+                    <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 transition-all duration-150 border-l-4 border-transparent hover:border-blue-400 dark:hover:border-blue-500">
                         <td class="px-4 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-8 w-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
@@ -99,8 +99,8 @@
                         </td>
                         <td class="px-4 py-4">
                             <div class="space-y-1">
-                                <div class="text-sm font-semibold text-gray-900">{{ $role->title_ru }}</div>
-                                <div class="text-xs text-gray-500">
+                                <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $role->title_ru }}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">
                                     <span class="inline-flex items-center">
                                         <i class="fas fa-globe mr-1"></i>
                                         {{ $role->title_kk }} / {{ $role->title_en }}
@@ -110,7 +110,7 @@
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <code class="px-3 py-1.5 text-xs bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-lg font-mono border border-gray-300">
+                                <code class="px-3 py-1.5 text-xs bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-mono border border-gray-300 dark:border-gray-600">
                                     {{ $role->value }}
                                 </code>
                             </div>
@@ -186,9 +186,9 @@
                     <tr>
                         <td colspan="7" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
-                                <i class="fas fa-user-tag text-4xl text-gray-300 mb-3"></i>
-                                <p class="text-gray-500 font-medium">Роли не найдены</p>
-                                <p class="text-gray-400 text-sm mt-1">Создайте первую роль для начала работы</p>
+                                <i class="fas fa-user-tag text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                                <p class="text-gray-500 dark:text-gray-400 font-medium">Роли не найдены</p>
+                                <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Создайте первую роль для начала работы</p>
                             </div>
                         </td>
                     </tr>
