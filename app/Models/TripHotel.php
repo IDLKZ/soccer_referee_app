@@ -53,7 +53,12 @@ class TripHotel extends Model
 
 	public function hotel()
 	{
-		return $this->belongsTo(Hotel::class, 'room_id');
+		return $this->belongsTo(Hotel::class);
+	}
+
+	public function hotel_room()
+	{
+		return $this->belongsTo(HotelRoom::class, 'room_id');
 	}
 
 	public function trip()

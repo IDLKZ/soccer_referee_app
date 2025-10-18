@@ -78,6 +78,21 @@
                     <span class="ml-3">Тип транспорта</span>
                 </a>
             @endcan
+
+            <!-- Business Trips -->
+            <div class="pt-4">
+                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Командировки
+                </p>
+            </div>
+
+            @can('manage-logistics')
+                <a href="{{ route('business-trip-cards') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('business-trip*') ? 'bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-plane-departure w-5"></i>
+                    <span class="ml-3">Управление командировками</span>
+                </a>
+            @endcan
         </nav>
     </div>
 </aside>

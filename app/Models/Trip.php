@@ -113,6 +113,16 @@ class Trip extends Model
 		return $this->hasMany(TripDocument::class);
 	}
 
+	public function trip_hotels()
+	{
+		return $this->hasMany(TripHotel::class);
+	}
+
+	public function trip_migrations()
+	{
+		return $this->hasMany(TripMigration::class);
+	}
+
 	public function hotels()
 	{
 		return $this->belongsToMany(Hotel::class, 'trip_hotels', 'trip_id', 'room_id')

@@ -184,6 +184,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('referee.my-invitations')
         ->middleware('can:view-own-invitations');
 
+    Route::get('/referee/my-business-trips', \App\Livewire\MyBusinessTrips::class)
+        ->name('referee.my-business-trips')
+        ->middleware('can:view-own-trips');
+
     // Referee team approval (Head of Refereeing Department)
     Route::get('/referee-team-approval-cards', \App\Livewire\RefereeTeamApprovalCards::class)
         ->name('referee-team-approval-cards')
@@ -192,6 +196,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/referee-team-approval-detail/{id}', \App\Livewire\RefereeTeamApprovalDetail::class)
         ->name('referee-team-approval-detail')
         ->middleware('can:approve-referee-team');
+
+    // Business Trip Management (Logistician)
+    Route::get('/business-trip-cards', \App\Livewire\BusinessTripCards::class)
+        ->name('business-trip-cards')
+        ->middleware('can:manage-logistics');
+
+    Route::get('/business-trip-detail/{id}', \App\Livewire\BusinessTripDetail::class)
+        ->name('business-trip-detail')
+        ->middleware('can:manage-logistics');
 
     // Финансовое управление
     Route::get('/finance', FinanceManagement::class)

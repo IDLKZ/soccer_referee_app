@@ -12,8 +12,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class TripMigration
- * 
+ *
  * @property int $id
+ * @property int $trip_id
  * @property int $transport_type_id
  * @property int $departure_city_id
  * @property int $arrival_city_id
@@ -23,8 +24,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * 
- * @property City $city
+ *
+ * @property Trip $trip
+ * @property City $departure_city
+ * @property City $arrival_city
  * @property TransportType $transport_type
  *
  * @package App\Models
@@ -35,6 +38,7 @@ class TripMigration extends Model
 	protected $table = 'trip_migrations';
 
 	protected $casts = [
+		'trip_id' => 'int',
 		'transport_type_id' => 'int',
 		'departure_city_id' => 'int',
 		'arrival_city_id' => 'int',
@@ -43,6 +47,7 @@ class TripMigration extends Model
 	];
 
 	protected $fillable = [
+		'trip_id',
 		'transport_type_id',
 		'departure_city_id',
 		'arrival_city_id',
@@ -51,9 +56,19 @@ class TripMigration extends Model
 		'info'
 	];
 
-	public function city()
+	public function trip()
+	{
+		return $this->belongsTo(Trip::class);
+	}
+
+	public function departure_city()
 	{
 		return $this->belongsTo(City::class, 'departure_city_id');
+	}
+
+	public function arrival_city()
+	{
+		return $this->belongsTo(City::class, 'arrival_city_id');
 	}
 
 	public function transport_type()
