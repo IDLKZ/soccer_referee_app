@@ -80,6 +80,7 @@ class MyBusinessTrips extends Component
         // Get business_trip_plan_preparation operation
         $operation = Operation::where('value', 'business_trip_plan_preparation')->firstOrFail();
 
+        // Create trip - Observer will automatically update match operation
         Trip::create([
             'match_id' => $matchId,
             'judge_id' => auth()->id(),
@@ -93,35 +94,8 @@ class MyBusinessTrips extends Component
             'final_status' => 0,
         ]);
 
-        // Check if all judges from match_judges have created trips
-        $this->checkAndUpdateMatchOperation($match);
-
         session()->flash('message', 'Командировка успешно создана');
         $this->reset('transportForm', 'selectedMatch');
-    }
-
-    private function checkAndUpdateMatchOperation($match)
-    {
-        // Get all judge IDs from match_judges
-        $requiredJudgeIds = $match->match_judges->pluck('judge_id')->toArray();
-
-        // Get all judge IDs who have created trips for this match
-        $createdTripJudgeIds = Trip::where('match_id', $match->id)
-            ->pluck('judge_id')
-            ->toArray();
-
-        // Check if all required judges have created trips
-        $allJudgesCreatedTrips = empty(array_diff($requiredJudgeIds, $createdTripJudgeIds));
-
-        if ($allJudgesCreatedTrips && count($requiredJudgeIds) > 0) {
-            // Update match operation to business_trip_plan_preparation
-            $businessTripPlanOperation = Operation::where('value', 'business_trip_plan_preparation')->first();
-            if ($businessTripPlanOperation) {
-                $match->update([
-                    'current_operation_id' => $businessTripPlanOperation->id
-                ]);
-            }
-        }
     }
 
     public function openConfirmationModal($tripId)
@@ -241,7 +215,7 @@ class MyBusinessTrips extends Component
             ])
             ->where('judge_id', auth()->id())
             ->whereHas('operation', function($query) {
-                $query->where('value', 'primary_business_trip_confirmation');
+                $query->where('value', 'referee_team_confirmation');
             })
             ->where('judge_status', 0) // waiting
             ->orderBy('created_at', 'desc')
@@ -267,6 +241,6 @@ class MyBusinessTrips extends Component
             'transportMatches' => $transportMatches,
             'awaitingConfirmation' => $awaitingConfirmation,
             'completedTrips' => $completedTrips,
-        ])->layout('layouts.referee');
+        ])->layout(get_user_layout());
     }
 }

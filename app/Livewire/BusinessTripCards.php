@@ -160,6 +160,6 @@ class BusinessTripCards extends Component
 
         return view('livewire.logistician.business-trip-cards', [
             'matches' => $matches
-        ])->layout('layouts.logistician');
+        ])->layout(get_user_layout());
     }
 }

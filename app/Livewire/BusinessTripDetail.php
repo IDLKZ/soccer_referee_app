@@ -11,6 +11,7 @@ use App\Models\TripMigration;
 use App\Models\TripDocument;
 use App\Models\City;
 use App\Models\TransportType;
+use App\Models\Operation;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\WithFileUploads;
@@ -489,10 +490,74 @@ class BusinessTripDetail extends Component
         $this->openDocumentsModal($this->currentTripId);
     }
 
-    public function viewTripDetails($tripId)
+    /**
+     * Determine the next operation value based on a single trip's statuses
+     */
+    public function determineNextOperationForTrip($trip)
     {
-        // Placeholder for view-only mode
-        session()->flash('message', 'Просмотр деталей командировки');
+        if ($trip->judge_status == 0 && $trip->first_status == 0 && $trip->final_status == 0) {
+            return 'referee_team_confirmation';
+        } elseif ($trip->judge_status == 1 && $trip->first_status == 0) {
+            return 'primary_business_trip_confirmation';
+        } elseif ($trip->judge_status == 1 && $trip->first_status == 1) {
+            return 'final_business_trip_confirmation';
+        }
+
+        throw new \Exception('Невозможно определить следующую операцию для командировки ID: ' . $trip->id);
+    }
+
+    /**
+     * Submit a single trip for confirmation
+     */
+    public function submitForConfirmation($tripId)
+    {
+        try {
+            $trip = Trip::findOrFail($tripId);
+
+            // Determine next operation for this specific trip
+            $nextOperationValue = $this->determineNextOperationForTrip($trip);
+            $nextOperation = Operation::where('value', $nextOperationValue)->first();
+
+            if (!$nextOperation) {
+                throw new \Exception("Операция '{$nextOperationValue}' не найдена в системе.");
+            }
+
+            // Update this trip's operation
+            // Observer will automatically update match operation
+            $trip->update(['operation_id' => $nextOperation->id]);
+
+            session()->flash('message', 'Командировка успешно отправлена на подтверждение.');
+            $this->loadMatch();
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Resubmit a single trip for review after reprocessing
+     */
+    public function resubmitForReview($tripId)
+    {
+        try {
+            $trip = Trip::findOrFail($tripId);
+
+            // Determine next operation for this specific trip
+            $nextOperationValue = $this->determineNextOperationForTrip($trip);
+            $nextOperation = Operation::where('value', $nextOperationValue)->first();
+
+            if (!$nextOperation) {
+                throw new \Exception("Операция '{$nextOperationValue}' не найдена в системе.");
+            }
+
+            // Update this trip's operation
+            // Observer will automatically update match operation
+            $trip->update(['operation_id' => $nextOperation->id]);
+
+            session()->flash('message', 'Командировка успешно отправлена на новую проверку.');
+            $this->loadMatch();
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     public function goBack()
@@ -502,6 +567,6 @@ class BusinessTripDetail extends Component
 
     public function render()
     {
-        return view('livewire.logistician.business-trip-detail')->layout('layouts.employee');
+        return view('livewire.logistician.business-trip-detail')->layout(get_user_layout());
     }
 }

@@ -24,6 +24,7 @@
                     </span>
                 </div>
 
+    
                 <!-- Информация о матче -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-white/90">
                     <div>
@@ -74,6 +75,21 @@
                 </div>
             </div>
         </div>
+
+        <!-- Success and Error Messages -->
+        @if (session()->has('message'))
+            <div class="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-400 px-6 py-4 rounded-lg flex items-center shadow-md">
+                <i class="fas fa-check-circle text-2xl mr-3"></i>
+                <span class="font-medium">{{ session('message') }}</span>
+            </div>
+        @endif
+
+        @if (session()->has('error'))
+            <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-400 px-6 py-4 rounded-lg flex items-center shadow-md">
+                <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
+                <span class="font-medium">{{ session('error') }}</span>
+            </div>
+        @endif
 
         <!-- Список командировок -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
@@ -153,36 +169,72 @@
                                 </div>
 
                                 <!-- Кнопки управления -->
-                                <div class="ml-4 flex gap-2">
-                                    @if(in_array($trip->operation->value, ['business_trip_plan_preparation', 'business_trip_registration', 'business_trip_plan_reprocessing']))
-                                        <!-- Редактирование отелей -->
-                                        <button wire:click="openHotelsModal({{ $trip->id }})"
-                                                class="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm">
-                                            <i class="fas fa-hotel mr-2"></i>
-                                            Отели
-                                        </button>
+                                <div class="ml-4 flex flex-col gap-2">
+                                    <!-- Submit/Resubmit buttons -->
+                                    <div class="flex gap-2">
+                                        @if($trip->operation->value === 'business_trip_plan_preparation')
+                                            <button wire:click="submitForConfirmation({{ $trip->id }})"
+                                                    wire:confirm="Вы уверены, что хотите отправить эту командировку на подтверждение?"
+                                                    class="inline-flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm shadow-md">
+                                                <i class="fas fa-paper-plane mr-2"></i>
+                                                Отправить на подтверждение
+                                            </button>
+                                        @endif
 
-                                        <!-- Редактирование маршрутов -->
-                                        <button wire:click="openMigrationsModal({{ $trip->id }})"
-                                                class="inline-flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm">
-                                            <i class="fas fa-route mr-2"></i>
-                                            Маршруты
-                                        </button>
+                                        @if($trip->operation->value === 'business_trip_plan_reprocessing')
+                                            <button wire:click="resubmitForReview({{ $trip->id }})"
+                                                    wire:confirm="Вы уверены, что хотите отправить эту командировку на новую проверку?"
+                                                    class="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm shadow-md">
+                                                <i class="fas fa-redo mr-2"></i>
+                                                Отправить на проверку
+                                            </button>
+                                        @endif
+                                    </div>
 
-                                        <!-- Редактирование документов -->
-                                        <button wire:click="openDocumentsModal({{ $trip->id }})"
-                                                class="inline-flex items-center px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors text-sm">
-                                            <i class="fas fa-file-alt mr-2"></i>
-                                            Документы
-                                        </button>
-                                    @else
-                                        <!-- Просмотр (только чтение) -->
-                                        <button wire:click="viewTripDetails({{ $trip->id }})"
-                                                class="inline-flex items-center px-3 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm">
-                                            <i class="fas fa-eye mr-2"></i>
-                                            Просмотр
-                                        </button>
-                                    @endif
+                                    <!-- Edit/View buttons -->
+                                    <div class="flex gap-2">
+                                        @if(in_array($trip->operation->value, ['business_trip_plan_preparation', 'business_trip_registration', 'business_trip_plan_reprocessing']))
+                                            <!-- Редактирование отелей -->
+                                            <button wire:click="openHotelsModal({{ $trip->id }})"
+                                                    class="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm">
+                                                <i class="fas fa-hotel mr-2"></i>
+                                                Отели
+                                            </button>
+
+                                            <!-- Редактирование маршрутов -->
+                                            <button wire:click="openMigrationsModal({{ $trip->id }})"
+                                                    class="inline-flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm">
+                                                <i class="fas fa-route mr-2"></i>
+                                                Маршруты
+                                            </button>
+
+                                            <!-- Редактирование документов -->
+                                            <button wire:click="openDocumentsModal({{ $trip->id }})"
+                                                    class="inline-flex items-center px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors text-sm">
+                                                <i class="fas fa-file-alt mr-2"></i>
+                                                Документы
+                                            </button>
+                                        @else
+                                            <!-- Просмотр (только чтение) -->
+                                            <button wire:click="openHotelsModal({{ $trip->id }})"
+                                                    class="inline-flex items-center px-3 py-2 bg-blue-500/70 hover:bg-blue-600/70 text-white rounded-lg transition-colors text-sm">
+                                                <i class="fas fa-hotel mr-2"></i>
+                                                Отели
+                                            </button>
+
+                                            <button wire:click="openMigrationsModal({{ $trip->id }})"
+                                                    class="inline-flex items-center px-3 py-2 bg-green-500/70 hover:bg-green-600/70 text-white rounded-lg transition-colors text-sm">
+                                                <i class="fas fa-route mr-2"></i>
+                                                Маршруты
+                                            </button>
+
+                                            <button wire:click="openDocumentsModal({{ $trip->id }})"
+                                                    class="inline-flex items-center px-3 py-2 bg-purple-500/70 hover:bg-purple-600/70 text-white rounded-lg transition-colors text-sm">
+                                                <i class="fas fa-file-alt mr-2"></i>
+                                                Документы
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -243,7 +295,19 @@
                         </div>
                     @endif
 
+                    @php
+                        $canEdit = $currentTrip && in_array($currentTrip->operation->value, ['business_trip_plan_preparation', 'business_trip_registration', 'business_trip_plan_reprocessing']);
+                    @endphp
+
+                    @if(!$canEdit)
+                        <div class="mb-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-400 px-4 py-3 rounded-lg flex items-center">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <span>Режим просмотра. Редактирование недоступно.</span>
+                        </div>
+                    @endif
+
                     <!-- Hotel Form -->
+                    @if($canEdit)
                     <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 mb-6">
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                             {{ $hotelForm['id'] ? 'Редактировать отель' : 'Добавить отель' }}
@@ -334,6 +398,7 @@
                             @endif
                         </div>
                     </div>
+                    @endif
 
                     <!-- Hotels List -->
                     <div>
@@ -366,6 +431,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @if($canEdit)
                                         <div class="ml-4 flex gap-2">
                                             <button wire:click="editHotel({{ $tripHotel->id }})"
                                                     class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
@@ -377,6 +443,7 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>
@@ -440,7 +507,19 @@
                         </div>
                     @endif
 
+                    @php
+                        $canEdit = $currentTrip && in_array($currentTrip->operation->value, ['business_trip_plan_preparation', 'business_trip_registration', 'business_trip_plan_reprocessing']);
+                    @endphp
+
+                    @if(!$canEdit)
+                        <div class="mb-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-400 px-4 py-3 rounded-lg flex items-center">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <span>Режим просмотра. Редактирование недоступно.</span>
+                        </div>
+                    @endif
+
                     <!-- Migration Form -->
+                    @if($canEdit)
                     <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 mb-6">
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                             {{ $migrationForm['id'] ? 'Редактировать маршрут' : 'Добавить маршрут' }}
@@ -558,6 +637,7 @@
                             @endif
                         </div>
                     </div>
+                    @endif
 
                     <!-- Migrations List -->
                     <div>
@@ -612,6 +692,7 @@
                                             </div>
 
                                             <!-- Actions -->
+                                            @if($canEdit)
                                             <div class="ml-4 flex gap-2">
                                                 <button wire:click="editMigration({{ $tripMigration->id }})"
                                                         class="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300">
@@ -623,6 +704,7 @@
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
@@ -687,7 +769,19 @@
                         </div>
                     @endif
 
+                    @php
+                        $canEdit = $currentTrip && in_array($currentTrip->operation->value, ['business_trip_plan_preparation', 'business_trip_registration', 'business_trip_plan_reprocessing']);
+                    @endphp
+
+                    @if(!$canEdit)
+                        <div class="mb-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-400 px-4 py-3 rounded-lg flex items-center">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <span>Режим просмотра. Редактирование недоступно.</span>
+                        </div>
+                    @endif
+
                     <!-- Document Form -->
+                    @if($canEdit)
                     <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 mb-6">
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                             {{ $documentForm['id'] ? 'Редактировать документ' : 'Добавить документ' }}
@@ -816,6 +910,7 @@
                             @endif
                         </div>
                     </div>
+                    @endif
 
                     <!-- Documents List -->
                     <div>
@@ -886,6 +981,7 @@
                                             </div>
 
                                             <!-- Actions -->
+                                            @if($canEdit)
                                             <div class="ml-4 flex gap-2">
                                                 <button wire:click="toggleDocumentStatus({{ $tripDocument->id }})"
                                                         class="text-{{ $tripDocument->is_active ? 'yellow' : 'green' }}-600 dark:text-{{ $tripDocument->is_active ? 'yellow' : 'green' }}-400 hover:text-{{ $tripDocument->is_active ? 'yellow' : 'green' }}-800"
@@ -902,6 +998,7 @@
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach

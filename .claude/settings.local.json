@@ -10,7 +10,12 @@
       "Bash(php artisan vendor:publish:*)",
       "Bash(php artisan migrate:*)",
       "Bash(php artisan storage:link:*)",
-      "Bash(php artisan tinker:*)"
+      "Bash(php artisan tinker:*)",
+      "Bash(php artisan route:list --path=referee/my-business-trips)",
+      "Bash(php artisan pail --filter=\"my-business-trips\")",
+      "Bash(php artisan make:observer TripObserver --model=Trip)",
+      "Bash(php artisan make:livewire PrimaryBusinessTripConfirmation)",
+      "Bash(php artisan make:livewire FinalBusinessTripConfirmation)"
     ],
     "deny": [],
     "ask": []

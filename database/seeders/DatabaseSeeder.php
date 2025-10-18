@@ -25,8 +25,12 @@ class DatabaseSeeder extends Seeder
             LeagueSeeder::class,
             StadiumSeeder::class,
             ClubSeeder::class,
+            HotelSeeder::class,
             UserSeeder::class,
             FilemanagerRootFolderSeeder::class,
+            TransportTypeSeeder::class,
+            FacilitySeeder::class,
+            HotelRoomSeeder::class,
         ]);
     }
 }

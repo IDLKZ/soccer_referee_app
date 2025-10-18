@@ -197,6 +197,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('referee-team-approval-detail')
         ->middleware('can:approve-referee-team');
 
+    // Primary Business Trip Confirmation (Refereeing Department Employee)
+    Route::get('/primary-business-trip-confirmation', \App\Livewire\PrimaryBusinessTripConfirmation::class)
+        ->name('primary-business-trip-confirmation')
+        ->middleware('can:manage-referees');
+
+    // Final Business Trip Confirmation (Refereeing Department Head)
+    Route::get('/final-business-trip-confirmation', \App\Livewire\FinalBusinessTripConfirmation::class)
+        ->name('final-business-trip-confirmation')
+        ->middleware('can:approve-referee-team');
+
     // Business Trip Management (Logistician)
     Route::get('/business-trip-cards', \App\Livewire\BusinessTripCards::class)
         ->name('business-trip-cards')

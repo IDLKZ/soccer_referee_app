@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Livewire;
 use Illuminate\Pagination\Paginator;
+use App\Models\Trip;
+use App\Observers\TripObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +27,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Use Tailwind CSS for pagination
         Paginator::useTailwind();
+
+        // Register observers
+        Trip::observe(TripObserver::class);
     }
 }
