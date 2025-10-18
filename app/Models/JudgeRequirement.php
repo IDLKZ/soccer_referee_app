@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class JudgeRequirement
- * 
+ *
  * @property int $id
  * @property int $match_id
  * @property int $judge_type_id
@@ -19,9 +19,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $is_required
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property JudgeType $judge_type
- * @property Match $match
+ * @property MatchEntity $match
  *
  * @package App\Models
  */
@@ -50,6 +50,6 @@ class JudgeRequirement extends Model
 
 	public function match()
 	{
-		return $this->belongsTo(Match::class);
+		return $this->belongsTo(MatchEntity::class, 'match_id');
 	}
 }

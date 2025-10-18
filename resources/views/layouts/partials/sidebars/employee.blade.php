@@ -71,6 +71,22 @@
                 </a>
             @endcan
 
+            @can('manage-matches')
+                <a href="{{ route('match-entity-management') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('match-entity-management*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-futbol w-5"></i>
+                    <span class="ml-3">Управление матчами</span>
+                </a>
+            @endcan
+
+            @can('assign-referees')
+                <a href="{{ route('match-assignment-cards') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('match-assignment-cards*') || request()->routeIs('match-assignment-detail*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-user-tie w-5"></i>
+                    <span class="ml-3">Назначение судей на матч</span>
+                </a>
+            @endcan
+
             @can('manage-common-services')
                 <a href="{{ route('common-services') }}"
                    class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('common-services*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">

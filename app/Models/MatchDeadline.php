@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class MatchDeadline
- * 
+ *
  * @property int $id
  * @property int $match_id
  * @property int $operation_id
@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $end_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
- * @property Match $match
+ *
+ * @property MatchEntity $match
  * @property Operation $operation
  *
  * @package App\Models
@@ -45,7 +45,7 @@ class MatchDeadline extends Model
 
 	public function match()
 	{
-		return $this->belongsTo(Match::class);
+		return $this->belongsTo(MatchEntity::class, 'match_id');
 	}
 
 	public function operation()

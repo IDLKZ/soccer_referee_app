@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  *
- * @property Collection|Match[] $matches
+ * @property Collection|MatchEntity[] $matches
  *
  * @package App\Models
  */

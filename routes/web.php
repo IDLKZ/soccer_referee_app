@@ -26,6 +26,10 @@ use App\Livewire\RoomFacilityManagement;
 use App\Livewire\JudgeTypeManagement;
 use App\Livewire\CommonServiceManagement;
 use App\Livewire\ProtocolRequirementManagement;
+use App\Livewire\MatchEntityManagement;
+use App\Livewire\MatchEntityView;
+use App\Livewire\MatchAssignmentCards;
+use App\Livewire\MatchAssignmentDetail;
 
 // Переключение языка
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
@@ -151,6 +155,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/protocol-requirements', ProtocolRequirementManagement::class)
         ->name('protocol-requirements')
         ->middleware('can:manage-protocol-requirements');
+
+    Route::get('/match-entity-management', MatchEntityManagement::class)
+        ->name('match-entity-management')
+        ->middleware('can:manage-matches');
+
+    Route::get('/match-entity/{id}', MatchEntityView::class)
+        ->name('match-entity-view')
+        ->middleware('can:view-matches');
+
+    // Назначение судей на матч
+    Route::get('/match-assignment-cards', MatchAssignmentCards::class)
+        ->name('match-assignment-cards')
+        ->middleware('can:assign-referees');
+
+    Route::get('/match-assignment-detail/{id}', MatchAssignmentDetail::class)
+        ->name('match-assignment-detail')
+        ->middleware('can:assign-referees');
 
     // Финансовое управление
     Route::get('/finance', FinanceManagement::class)

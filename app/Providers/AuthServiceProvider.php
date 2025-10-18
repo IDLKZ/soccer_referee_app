@@ -79,6 +79,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('assign-referees', function (User $user) {
             return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
                 RoleConstants::REFEREEING_DEPARTMENT_HEAD,
                 RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);

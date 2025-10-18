@@ -136,12 +136,12 @@ class MatchEntity extends Model
 
 	public function judge_requirements()
 	{
-		return $this->hasMany(JudgeRequirement::class);
+		return $this->hasMany(JudgeRequirement::class, 'match_id');
 	}
 
 	public function match_deadlines()
 	{
-		return $this->hasMany(MatchDeadline::class);
+		return $this->hasMany(MatchDeadline::class, 'match_id');
 	}
 
 	public function match_flows()
@@ -156,12 +156,12 @@ class MatchEntity extends Model
 
 	public function match_judges()
 	{
-		return $this->hasMany(MatchJudge::class);
+		return $this->hasMany(MatchJudge::class, 'match_id');
 	}
 
 	public function match_logists()
 	{
-		return $this->hasMany(MatchLogist::class);
+		return $this->hasMany(MatchLogist::class, 'match_id');
 	}
 
 	public function protocol_requirements()
@@ -171,11 +171,11 @@ class MatchEntity extends Model
 
 	public function protocols()
 	{
-		return $this->hasMany(Protocol::class);
+		return $this->hasMany(Protocol::class, 'match_id');
 	}
 
 	public function trips()
 	{
-		return $this->hasMany(Trip::class);
+		return $this->hasMany(Trip::class, 'match_id');
 	}
 }
