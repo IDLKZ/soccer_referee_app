@@ -1,3 +1,0 @@
-При выборе Выбор транспорта и указание точки отправления (если у данного матча нет trips.judge_id == user_id) то soccer_referee - выбирает departure_city_id, transport_type_id, остальные поля подтягиваются из match, name -> заполняется как owner_club - guest_club, date, а operation_id выставляется в operation.value == business_trip_plan_preparation
-Когда все рефери которые были указаны match_judges созданы trips то match.operation_id меняется на operation.value == business_trip_plan_preparation
-trips для одного match_id и для одного judge_id нельзя создавать 2 trips на один и тот же матч для одного match_id и для одного judge_id
