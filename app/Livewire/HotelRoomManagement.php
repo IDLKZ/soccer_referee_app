@@ -13,7 +13,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление номерами отелей')]
-#[Layout('layouts.admin')]
 class HotelRoomManagement extends Component
 {
     use WithPagination, WithFileUploads;
@@ -427,6 +426,6 @@ class HotelRoomManagement extends Component
     {
         return view('livewire.hotel-room-management', [
             'hotelRooms' => $this->getHotelRooms(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

@@ -13,7 +13,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление лигами')]
-#[Layout('layouts.admin')]
 class LeagueManagement extends Component
 {
     use WithPagination, WithFileUploads;
@@ -351,6 +350,6 @@ class LeagueManagement extends Component
     {
         return view('livewire.league-management', [
             'leagues' => $this->getLeagues(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

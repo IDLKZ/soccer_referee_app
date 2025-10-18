@@ -12,7 +12,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление типами транспорта')]
-#[Layout('layouts.admin')]
 class TransportTypeManagement extends Component
 {
     use WithPagination, WithFileUploads;
@@ -284,6 +283,6 @@ class TransportTypeManagement extends Component
     {
         return view('livewire.transport-type-management', [
             'transportTypes' => $this->getTransportTypes(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

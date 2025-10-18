@@ -11,7 +11,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление сезонами')]
-#[Layout('layouts.admin')]
 class SeasonManagement extends Component
 {
     use WithPagination;
@@ -204,6 +203,6 @@ class SeasonManagement extends Component
     {
         return view('livewire.season-management', [
             'seasons' => $this->getSeasons(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

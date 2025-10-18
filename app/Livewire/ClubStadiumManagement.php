@@ -12,7 +12,6 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
 
 #[Title('Управление связями клубов и стадионов')]
-#[Layout('layouts.admin')]
 class ClubStadiumManagement extends Component
 {
     use WithPagination;
@@ -252,6 +251,6 @@ class ClubStadiumManagement extends Component
     {
         return view('livewire.club-stadium-management', [
             'clubStadiums' => $this->getClubStadiums(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

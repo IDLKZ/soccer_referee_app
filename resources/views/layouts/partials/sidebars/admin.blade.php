@@ -28,12 +28,6 @@
                 <span class="ml-3">Роли и права</span>
             </a>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-cog w-5"></i>
-                <span class="ml-3">Настройки</span>
-            </a>
-
             <!-- Club Management -->
             <div class="pt-4">
                 <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
@@ -72,12 +66,6 @@
                 </p>
             </div>
 
-            <a href="{{ route('matches') }}"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('matches') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                <i class="fas fa-calendar-alt w-5"></i>
-                <span class="ml-3">Матчи</span>
-            </a>
-
             @can('manage-category-operations')
                 <a href="{{ route('category-operations') }}"
                    class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('category-operations*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
@@ -110,24 +98,27 @@
                 </a>
             @endcan
 
-            <!-- Referees -->
-            <div class="pt-4">
-                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Судьи
-                </p>
-            </div>
-
             <a href="{{ route('referees') }}"
                class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('referees') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                 <i class="fas fa-user-tie w-5"></i>
                 <span class="ml-3">Судьи</span>
             </a>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-list w-5"></i>
-                <span class="ml-3">Типы судей</span>
-            </a>
+            @can('manage-judge-types')
+                <a href="{{ route('judge-types') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('judge-types*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-user-shield w-5"></i>
+                    <span class="ml-3">Типы судей</span>
+                </a>
+            @endcan
+
+            @can('manage-protocol-requirements')
+                <a href="{{ route('protocol-requirements') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('protocol-requirements*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-file-alt w-5"></i>
+                    <span class="ml-3">Требования протоколов</span>
+                </a>
+            @endcan
 
             <!-- Finance -->
             <div class="pt-4">
@@ -142,11 +133,13 @@
                 <span class="ml-3">Финансы</span>
             </a>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-concierge-bell w-5"></i>
-                <span class="ml-3">Услуги</span>
-            </a>
+            @can('manage-common-services')
+                <a href="{{ route('common-services') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('common-services*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-briefcase w-5"></i>
+                    <span class="ml-3">Типы работ (АВР)</span>
+                </a>
+            @endcan
 
             <!-- Logistics -->
             <div class="pt-4">
@@ -171,12 +164,7 @@
                 </a>
             @endcan
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-plane w-5"></i>
-                <span class="ml-3">Командировки</span>
-            </a>
-
+  
             @can('manage-hotels')
                 <a href="{{ route('hotels') }}"
                    class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('hotels*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
@@ -216,25 +204,6 @@
                     <span class="ml-3">Типы транспорта</span>
                 </a>
             @endcan
-
-            <!-- Reports -->
-            <div class="pt-4">
-                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Отчеты
-                </p>
-            </div>
-
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-chart-bar w-5"></i>
-                <span class="ml-3">Отчеты</span>
-            </a>
-
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-history w-5"></i>
-                <span class="ml-3">Логи</span>
-            </a>
         </nav>
     </div>
 </aside>

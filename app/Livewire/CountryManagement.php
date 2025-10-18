@@ -11,7 +11,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление странами')]
-#[Layout('layouts.admin')]
 class CountryManagement extends Component
 {
     use WithPagination;
@@ -58,6 +57,7 @@ class CountryManagement extends Component
         $this->canCreate = $user->can('create-countries');
         $this->canEdit = $user->can('manage-countries');
         $this->canDelete = $user->can('delete-countries');
+
     }
 
     public function updatedSearch()
@@ -196,6 +196,6 @@ class CountryManagement extends Component
     {
         return view('livewire.country-management', [
             'countries' => $this->getCountries(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

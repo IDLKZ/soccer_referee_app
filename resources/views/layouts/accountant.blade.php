@@ -10,9 +10,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
     <!-- Livewire Styles -->
     @livewireStyles
 
@@ -62,15 +59,5 @@
     @livewireScripts
 
     @stack('scripts')
-
-    <!-- Initialize theme -->
-    <script>
-        document.addEventListener('alpine:init', () => {
-            const theme = localStorage.getItem('theme') || 'light';
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-            }
-        });
-    </script>
 </body>
 </html>

@@ -11,7 +11,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление категориями операций')]
-#[Layout('layouts.admin')]
 class CategoryOperationManagement extends Component
 {
     use WithPagination;
@@ -217,6 +216,6 @@ class CategoryOperationManagement extends Component
     {
         return view('livewire.category-operation-management', [
             'categoryOperations' => $this->getCategoryOperations(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

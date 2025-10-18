@@ -36,7 +36,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class TransportType extends Model implements HasMedia
 {
-    use SoftDeletes, InteractsWithMedia;
+    use InteractsWithMedia;
 
 	protected $table = 'transport_types';
 

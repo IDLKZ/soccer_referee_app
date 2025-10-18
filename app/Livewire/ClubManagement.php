@@ -14,7 +14,6 @@ use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 
 #[Title('Управление клубами')]
-#[Layout('layouts.admin')]
 class ClubManagement extends Component
 {
     use WithPagination, WithFileUploads;
@@ -435,6 +434,6 @@ class ClubManagement extends Component
     {
         return view('livewire.club-management', [
             'clubs' => $this->getClubs(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

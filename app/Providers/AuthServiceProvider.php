@@ -163,6 +163,13 @@ class AuthServiceProvider extends ServiceProvider
             ]);
         });
 
+        Gate::define('create-stadiums', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
         // Просмотр отчетов
         Gate::define('view-reports', function (User $user) {
             return $user->role && in_array($user->role->value, [
@@ -230,6 +237,98 @@ class AuthServiceProvider extends ServiceProvider
                 RoleConstants::ADMINISTRATOR,
                 RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
                 RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('create-hotels', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('delete-hotels', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('manage-hotel-rooms', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('create-hotel-rooms', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('delete-hotel-rooms', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('manage-facilities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('create-facilities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('delete-facilities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('manage-room-facilities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('create-room-facilities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('delete-room-facilities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
 
@@ -238,20 +337,43 @@ class AuthServiceProvider extends ServiceProvider
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
                 RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('manage-seasons', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('create-seasons', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('delete-seasons', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
 
         Gate::define('create-leagues', function (User $user) {
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
-                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
 
         Gate::define('delete-leagues', function (User $user) {
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
-                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
 
@@ -326,13 +448,14 @@ class AuthServiceProvider extends ServiceProvider
                 RoleConstants::ADMINISTRATOR,
                 RoleConstants::REFEREEING_DEPARTMENT_HEAD,
                 RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
 
         Gate::define('create-cities', function (User $user) {
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
-                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
                 RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
             ]);
         });
@@ -340,22 +463,22 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('delete-cities', function (User $user) {
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
-                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
 
         Gate::define('manage-countries', function (User $user) {
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
-                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
                 RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
 
         Gate::define('create-countries', function (User $user) {
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
-                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
                 RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
             ]);
         });
@@ -363,7 +486,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('delete-countries', function (User $user) {
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
-                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
 
@@ -408,6 +531,94 @@ class AuthServiceProvider extends ServiceProvider
             return $user->role && in_array($user->role->value, [
                 RoleConstants::ADMINISTRATOR,
                 RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
+        // Управление клуб-стадионами
+        Gate::define('manage-club-stadiums', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('create-club-stadiums', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('delete-club-stadiums', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        // Управление типами транспорта
+        Gate::define('manage-transport-types', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('create-transport-types', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        Gate::define('delete-transport-types', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        // Управление категориями операций
+        Gate::define('manage-category-operations', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        // Управление операциями
+        Gate::define('manage-operations', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        // Управление требованиями протоколов
+        Gate::define('manage-protocol-requirements', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        // Управление общими услугами (типы работ АВР)
+        Gate::define('manage-common-services', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+                RoleConstants::FINANCE_DEPARTMENT_HEAD,
+                RoleConstants::FINANCE_DEPARTMENT_SPECIALIST,
+                RoleConstants::REFEREEING_DEPARTMENT_ACCOUNTANT,
             ]);
         });
     }

@@ -9,119 +9,75 @@
                 <span class="ml-3">Главная</span>
             </a>
 
-            <!-- Trips -->
+                      <!-- Geography Management -->
             <div class="pt-4">
                 <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Командировки
+                    География
                 </p>
             </div>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-plane w-5"></i>
-                <span class="ml-3">Все командировки</span>
-            </a>
+            @can('manage-countries')
+                <a href="{{ route('countries') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('countries*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-globe w-5"></i>
+                    <span class="ml-3">Страны</span>
+                </a>
+            @endcan
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-clock w-5"></i>
-                <span class="ml-3">Планируемые</span>
-            </a>
+            @can('manage-cities')
+                <a href="{{ route('cities') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('cities*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-city w-5"></i>
+                    <span class="ml-3">Города</span>
+                </a>
+            @endcan
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-running w-5"></i>
-                <span class="ml-3">Активные</span>
-            </a>
-
-            <!-- Hotels -->
+            <!-- Hotels and Logistics -->
             <div class="pt-4">
                 <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Размещение
+                    Отели и логистика
                 </p>
             </div>
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-hotel w-5"></i>
-                <span class="ml-3">Отели</span>
-            </a>
+            @can('manage-hotels')
+                <a href="{{ route('hotels') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('hotels*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-hotel w-5"></i>
+                    <span class="ml-3">Отели</span>
+                </a>
+            @endcan
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-bed w-5"></i>
-                <span class="ml-3">Бронирования</span>
-            </a>
+            @can('manage-hotel-rooms')
+                <a href="{{ route('hotel-rooms') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('hotel-rooms*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-bed w-5"></i>
+                    <span class="ml-3">Номера отелей</span>
+                </a>
+            @endcan
 
-            <!-- Transport -->
-            <div class="pt-4">
-                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Транспорт
-                </p>
-            </div>
+            @can('manage-facilities')
+                <a href="{{ route('facilities') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('facilities*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-wifi w-5"></i>
+                    <span class="ml-3">Удобства номеров</span>
+                </a>
+            @endcan
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-bus w-5"></i>
-                <span class="ml-3">Транспорт</span>
-            </a>
+            @can('manage-room-facilities')
+                <a href="{{ route('room-facilities') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('room-facilities*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-link w-5"></i>
+                    <span class="ml-3">Связи удобств</span>
+                </a>
+            @endcan
 
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-ticket-alt w-5"></i>
-                <span class="ml-3">Билеты</span>
-            </a>
-
-            <!-- Documents -->
-            <div class="pt-4">
-                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Документы
-                </p>
-            </div>
-
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-file-alt w-5"></i>
-                <span class="ml-3">Документы командировок</span>
-            </a>
-
-            <!-- Schedule -->
-            <div class="pt-4">
-                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Планирование
-                </p>
-            </div>
-
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-calendar-alt w-5"></i>
-                <span class="ml-3">Матчи</span>
-            </a>
-
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-calendar w-5"></i>
-                <span class="ml-3">Календарь</span>
-            </a>
-
-            <!-- Referees -->
-            <div class="pt-4">
-                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Справочники
-                </p>
-            </div>
-
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-user-tie w-5"></i>
-                <span class="ml-3">Судьи</span>
-            </a>
-
-            <a href="#"
-               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <i class="fas fa-map-marker-alt w-5"></i>
-                <span class="ml-3">Города</span>
-            </a>
+            @can('manage-transport-types')
+                <a href="{{ route('transport-types') }}"
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('transport-types*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-bus w-5"></i>
+                    <span class="ml-3">Тип транспорта</span>
+                </a>
+            @endcan
         </nav>
     </div>
 </aside>

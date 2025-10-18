@@ -13,7 +13,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление стадионами')]
-#[Layout('layouts.admin')]
 class StadiumManagement extends Component
 {
     use WithPagination, WithFileUploads;
@@ -431,6 +430,6 @@ class StadiumManagement extends Component
     {
         return view('livewire.stadium-management', [
             'stadiums' => $this->getStadiums(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

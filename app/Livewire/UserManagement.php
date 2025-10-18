@@ -13,7 +13,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление пользователями')]
-#[Layout('layouts.admin')]
 class UserManagement extends Component
 {
     use WithPagination;
@@ -251,6 +250,6 @@ class UserManagement extends Component
     {
         return view('livewire.user-management', [
             'users' => $this->getUsers(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

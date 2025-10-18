@@ -23,6 +23,9 @@ use App\Livewire\CategoryOperationManagement;
 use App\Livewire\OperationManagement;
 use App\Livewire\FacilityManagement;
 use App\Livewire\RoomFacilityManagement;
+use App\Livewire\JudgeTypeManagement;
+use App\Livewire\CommonServiceManagement;
+use App\Livewire\ProtocolRequirementManagement;
 
 // Переключение языка
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
@@ -100,9 +103,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('clubs')
         ->middleware('can:manage-clubs');
 
-    Route::get('/stadiums', function () {
-        return view('stadiums');
-    })->name('stadiums');
+    Route::get('/stadiums', StadiumManagement::class)
+        ->name('stadiums')
+        ->middleware('can:manage-stadiums')
+    ;
 
     Route::get('/club-stadiums', ClubStadiumManagement::class)
         ->name('club-stadiums')
@@ -135,6 +139,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/room-facilities', RoomFacilityManagement::class)
         ->name('room-facilities')
         ->middleware('can:manage-room-facilities');
+
+    Route::get('/judge-types', JudgeTypeManagement::class)
+        ->name('judge-types')
+        ->middleware('can:manage-judge-types');
+
+    Route::get('/common-services', CommonServiceManagement::class)
+        ->name('common-services')
+        ->middleware('can:manage-common-services');
+
+    Route::get('/protocol-requirements', ProtocolRequirementManagement::class)
+        ->name('protocol-requirements')
+        ->middleware('can:manage-protocol-requirements');
 
     // Финансовое управление
     Route::get('/finance', FinanceManagement::class)

@@ -12,7 +12,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление городами')]
-#[Layout('layouts.admin')]
 class CityManagement extends Component
 {
     use WithPagination;
@@ -236,6 +235,6 @@ class CityManagement extends Component
     {
         return view('livewire.city-management', [
             'cities' => $this->getCities(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

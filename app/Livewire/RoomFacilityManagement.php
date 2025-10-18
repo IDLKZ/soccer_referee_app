@@ -13,7 +13,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 
 #[Title('Управление удобствами номеров')]
-#[Layout('layouts.admin')]
 class RoomFacilityManagement extends Component
 {
     use WithPagination;
@@ -205,6 +204,6 @@ class RoomFacilityManagement extends Component
             'roomFacilities' => $this->getRoomFacilities(),
             'rooms' => $this->getRooms(),
             'facilities' => $this->getFacilities(),
-        ]);
+        ])->layout(get_user_layout());
     }
 }

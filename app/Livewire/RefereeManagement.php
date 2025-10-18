@@ -117,6 +117,6 @@ class RefereeManagement extends Component
     public function render()
     {
         return view('livewire.referee-management')
-            ->layout('layouts.app');
+            ->layout(get_user_layout());
     }
 }
