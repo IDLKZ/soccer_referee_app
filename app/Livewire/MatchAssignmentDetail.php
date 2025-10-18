@@ -62,15 +62,16 @@ class MatchAssignmentDetail extends Component
             'stadium.city',
             'city',
             'operation',
-            'club',
+            'ownerClub',
+            'guestClub',
             'judge_requirements.judge_type',
             'match_judges.user',
             'match_judges.judge_type',
         ])->findOrFail($this->matchId);
 
-        // Загрузка клубов
-        $this->ownerClub = \App\Models\Club::find($this->match->owner_club_id);
-        $this->guestClub = \App\Models\Club::find($this->match->guest_club_id);
+        // Загрузка клубов через relationships
+        $this->ownerClub = $this->match->ownerClub;
+        $this->guestClub = $this->match->guestClub;
 
         // Подсчет статистики
         $this->calculateStatistics();
@@ -132,18 +133,54 @@ class MatchAssignmentDetail extends Component
     public function updatedSelectedJudgeTypeId($value)
     {
         if ($value) {
+            // Собираем ID городов, из которых судьи не должны быть
+            $excludedCityIds = [];
+
+            // Город стадиона
+            if ($this->match->stadium && $this->match->stadium->city_id) {
+                $excludedCityIds[] = $this->match->stadium->city_id;
+            }
+
+            // Город матча (если указан напрямую)
+            if ($this->match->city_id) {
+                $excludedCityIds[] = $this->match->city_id;
+            }
+
+            // Город клуба-хозяина
+            if ($this->ownerClub && $this->ownerClub->city_id) {
+                $excludedCityIds[] = $this->ownerClub->city_id;
+            }
+
+            // Город клуба-гостя
+            if ($this->guestClub && $this->guestClub->city_id) {
+                $excludedCityIds[] = $this->guestClub->city_id;
+            }
+
+            // Удаляем дубликаты
+            $excludedCityIds = array_unique($excludedCityIds);
+
             // Загрузка пользователей с ролью SOCCER_REFEREE
-            $this->availableJudges = User::where('role', RoleConstants::SOCCER_REFEREE)
-                ->whereNotIn('id', function($query) use ($value) {
-                    // Исключаем уже приглашенных судей на этот матч с этим типом
+            $this->availableJudges = User::whereHas('role', function($query) {
+                    $query->where('value', RoleConstants::SOCCER_REFEREE);
+                })
+                ->where('is_active', true)
+                // Исключаем судей, которые уже приглашены на ЛЮБУЮ позицию в этом матче
+                ->whereNotIn('id', function($query) {
                     $query->select('judge_id')
                           ->from('match_judges')
                           ->where('match_id', $this->matchId)
-                          ->where('type_id', $value)
                           ->where('judge_response', '!=', -1); // Не учитываем отказавшихся
                 })
-                ->orderBy('lastname_ru')
-                ->orderBy('firstname_ru')
+                // Исключаем судей из городов матча и клубов
+                ->when(count($excludedCityIds) > 0, function($query) use ($excludedCityIds) {
+                    $query->whereNotIn('id', function($subQuery) use ($excludedCityIds) {
+                        $subQuery->select('user_id')
+                                 ->from('judge_cities')
+                                 ->whereIn('city_id', $excludedCityIds);
+                    });
+                })
+                ->orderBy('last_name')
+                ->orderBy('first_name')
                 ->get();
         } else {
             $this->availableJudges = [];
@@ -163,6 +200,46 @@ class MatchAssignmentDetail extends Component
             'selectedJudgeTypeId.required' => 'Выберите тип судьи',
             'selectedJudgeId.required' => 'Выберите судью',
         ]);
+
+        // Проверка: судья не должен быть уже приглашен на ЛЮБУЮ позицию в этом матче
+        $existingInvitation = MatchJudge::where('match_id', $this->matchId)
+            ->where('judge_id', $this->selectedJudgeId)
+            ->where('judge_response', '!=', -1) // Не считаем отказавшихся
+            ->first();
+
+        if ($existingInvitation) {
+            $this->addError('selectedJudgeId', 'Этот судья уже приглашен на другую позицию в данном матче');
+            return;
+        }
+
+        // Проверка: судья не должен быть из города матча или клубов
+        $excludedCityIds = [];
+
+        if ($this->match->stadium && $this->match->stadium->city_id) {
+            $excludedCityIds[] = $this->match->stadium->city_id;
+        }
+        if ($this->match->city_id) {
+            $excludedCityIds[] = $this->match->city_id;
+        }
+        if ($this->ownerClub && $this->ownerClub->city_id) {
+            $excludedCityIds[] = $this->ownerClub->city_id;
+        }
+        if ($this->guestClub && $this->guestClub->city_id) {
+            $excludedCityIds[] = $this->guestClub->city_id;
+        }
+
+        $excludedCityIds = array_unique($excludedCityIds);
+
+        if (count($excludedCityIds) > 0) {
+            $judgeHasConflictCity = \App\Models\JudgeCity::where('user_id', $this->selectedJudgeId)
+                ->whereIn('city_id', $excludedCityIds)
+                ->exists();
+
+            if ($judgeHasConflictCity) {
+                $this->addError('selectedJudgeId', 'Этот судья привязан к городу проведения матча или клубов');
+                return;
+            }
+        }
 
         // Проверка: не превышает ли количество приглашений требования
         $requirement = $this->match->judge_requirements->where('judge_type_id', $this->selectedJudgeTypeId)->first();
@@ -275,7 +352,7 @@ class MatchAssignmentDetail extends Component
 
             // Обновление статуса матча
             $this->match->update([
-                'operation_id' => $approvalOperation->id,
+                'current_operation_id' => $approvalOperation->id,
             ]);
 
             // Обновление данных

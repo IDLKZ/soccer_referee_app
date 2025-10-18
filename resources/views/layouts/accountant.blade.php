@@ -51,13 +51,33 @@
         <main class="flex-1 overflow-x-hidden overflow-y-auto">
             <div class="container mx-auto px-6 py-8">
                 @yield('content')
+                {{ $slot ?? '' }}
             </div>
         </main>
     </div>
 
     <!-- Livewire Scripts -->
     @livewireScripts
+    <!-- Initialize theme -->
+    <script>
+        // Initialize theme immediately
+        const theme = localStorage.getItem('theme') || 'light';
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
 
+        // Also initialize when Alpine is ready
+        document.addEventListener('alpine:init', () => {
+            const alpineTheme = localStorage.getItem('theme') || 'light';
+            if (alpineTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

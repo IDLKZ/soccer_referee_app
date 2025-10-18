@@ -26,6 +26,8 @@ use App\Livewire\RoomFacilityManagement;
 use App\Livewire\JudgeTypeManagement;
 use App\Livewire\CommonServiceManagement;
 use App\Livewire\ProtocolRequirementManagement;
+use App\Livewire\JudgeCityManagement;
+use App\Livewire\MyInvitationToBeReferee;
 use App\Livewire\MatchEntityManagement;
 use App\Livewire\MatchEntityView;
 use App\Livewire\MatchAssignmentCards;
@@ -156,6 +158,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('protocol-requirements')
         ->middleware('can:manage-protocol-requirements');
 
+    Route::get('/judge-cities', JudgeCityManagement::class)
+        ->name('judge-cities')
+        ->middleware('can:manage-judge-cities');
+
     Route::get('/match-entity-management', MatchEntityManagement::class)
         ->name('match-entity-management')
         ->middleware('can:manage-matches');
@@ -172,6 +178,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/match-assignment-detail/{id}', MatchAssignmentDetail::class)
         ->name('match-assignment-detail')
         ->middleware('can:assign-referees');
+
+    // Referee routes
+    Route::get('/referee/my-invitations', MyInvitationToBeReferee::class)
+        ->name('referee.my-invitations')
+        ->middleware('can:view-own-invitations');
+
+    // Referee team approval (Head of Refereeing Department)
+    Route::get('/referee-team-approval-cards', \App\Livewire\RefereeTeamApprovalCards::class)
+        ->name('referee-team-approval-cards')
+        ->middleware('can:approve-referee-team');
+
+    Route::get('/referee-team-approval-detail/{id}', \App\Livewire\RefereeTeamApprovalDetail::class)
+        ->name('referee-team-approval-detail')
+        ->middleware('can:approve-referee-team');
 
     // Финансовое управление
     Route::get('/finance', FinanceManagement::class)

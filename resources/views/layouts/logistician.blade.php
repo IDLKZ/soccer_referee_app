@@ -59,5 +59,25 @@
     @livewireScripts
 
     @stack('scripts')
+    <!-- Initialize theme -->
+    <script>
+        // Initialize theme immediately
+        const theme = localStorage.getItem('theme') || 'light';
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Also initialize when Alpine is ready
+        document.addEventListener('alpine:init', () => {
+            const alpineTheme = localStorage.getItem('theme') || 'light';
+            if (alpineTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
 </body>
 </html>

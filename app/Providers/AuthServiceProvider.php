@@ -85,6 +85,13 @@ class AuthServiceProvider extends ServiceProvider
             ]);
         });
 
+        Gate::define('approve-referee-team', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
         // Финансовые операции
         Gate::define('manage-finance', function (User $user) {
             return $user->role && in_array($user->role->value, [
@@ -418,6 +425,15 @@ class AuthServiceProvider extends ServiceProvider
             ]);
         });
 
+        // Управление связями судей и городов
+        Gate::define('manage-judge-cities', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
         // Просмотр логов
         Gate::define('view-logs', function (User $user) {
             return $user->role && $user->role->value === RoleConstants::ADMINISTRATOR;
@@ -440,6 +456,11 @@ class AuthServiceProvider extends ServiceProvider
 
         // Просмотр собственных выплат (для судей)
         Gate::define('view-own-payments', function (User $user) {
+            return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
+        });
+
+        // Просмотр собственных приглашений (для судей)
+        Gate::define('view-own-invitations', function (User $user) {
             return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
         });
 

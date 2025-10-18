@@ -208,11 +208,11 @@
                                 <!-- Информация о судье -->
                                 <div class="flex items-center mb-3">
                                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg mr-3">
-                                        {{ substr($judge->user->firstname_ru, 0, 1) }}{{ substr($judge->user->lastname_ru, 0, 1) }}
+                                        {{ substr($judge->user->first_name, 0, 1) }}{{ substr($judge->user->last_name, 0, 1) }}
                                     </div>
                                     <div class="flex-1">
                                         <p class="font-semibold text-gray-900 dark:text-gray-100">
-                                            {{ $judge->user->lastname_ru }} {{ $judge->user->firstname_ru }}
+                                            {{ $judge->user->last_name }} {{ $judge->user->first_name }}
                                         </p>
                                         <p class="text-xs text-gray-600 dark:text-gray-400">
                                             {{ $judge->judge_type->title_ru }}
@@ -328,7 +328,7 @@
                                 <option value="">Выберите судью</option>
                                 @foreach($availableJudges as $availableJudge)
                                     <option value="{{ $availableJudge->id }}">
-                                        {{ $availableJudge->lastname_ru }} {{ $availableJudge->firstname_ru }} {{ $availableJudge->patronymic_ru }}
+                                        {{ $availableJudge->last_name }} {{ $availableJudge->first_name }} {{ $availableJudge->patronomic }}
                                     </option>
                                 @endforeach
                             </select>

@@ -114,6 +114,21 @@ class MatchEntity extends Model
 		return $this->belongsTo(Club::class, 'winner_id');
 	}
 
+	public function ownerClub()
+	{
+		return $this->belongsTo(Club::class, 'owner_club_id');
+	}
+
+	public function guestClub()
+	{
+		return $this->belongsTo(Club::class, 'guest_club_id');
+	}
+
+	public function winnerClub()
+	{
+		return $this->belongsTo(Club::class, 'winner_id');
+	}
+
 	public function league()
 	{
 		return $this->belongsTo(League::class);
