@@ -464,6 +464,11 @@ class AuthServiceProvider extends ServiceProvider
             return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
         });
 
+        // Просмотр собственных протоколов (для судей)
+        Gate::define('view-own-protocols', function (User $user) {
+            return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
+        });
+
         // Управление городами
         Gate::define('manage-cities', function (User $user) {
             return $user->role && in_array($user->role->value, [
