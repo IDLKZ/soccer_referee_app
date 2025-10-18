@@ -64,6 +64,7 @@ class Protocol extends Model
 		'final_status',
 		'is_ready',
 		'comment',
+		'primary_comment',
 		'final_comment'
 	];
 

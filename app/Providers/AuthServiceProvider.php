@@ -469,6 +469,22 @@ class AuthServiceProvider extends ServiceProvider
             return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
         });
 
+        // Первичное утверждение протоколов (для сотрудников департамента судейства)
+        Gate::define('approve-primary-protocols', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
+
+        // Финальное утверждение протоколов (для руководителя департамента судейства)
+        Gate::define('approve-control-protocols', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+            ]);
+        });
+
         // Управление городами
         Gate::define('manage-cities', function (User $user) {
             return $user->role && in_array($user->role->value, [

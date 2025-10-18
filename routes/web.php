@@ -211,6 +211,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('final-business-trip-confirmation')
         ->middleware('can:approve-referee-team');
 
+    // Primary Protocol Approval (Refereeing Department Employee)
+    Route::get('/primary-protocol-approval', \App\Livewire\PrimaryProtocolApproval::class)
+        ->name('primary-protocol-approval')
+        ->middleware('can:approve-primary-protocols');
+
+    // Control Protocol Approval (Refereeing Department Head)
+    Route::get('/control-protocol-approval', \App\Livewire\ControlProtocolApproval::class)
+        ->name('control-protocol-approval')
+        ->middleware('can:approve-control-protocols');
+
     // Business Trip Management (Logistician)
     Route::get('/business-trip-cards', \App\Livewire\BusinessTripCards::class)
         ->name('business-trip-cards')
