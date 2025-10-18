@@ -117,14 +117,6 @@
                 </p>
             </div>
 
-            @can('view-own-protocols')
-                <a href="{{ route('referee.my-protocols') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('referee.my-protocols') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-file-alt w-5"></i>
-                    <span class="ml-3">Загрузка протоколов</span>
-                </a>
-            @endcan
-
             <!-- Geography Management -->
             <div class="pt-4">
                 <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">

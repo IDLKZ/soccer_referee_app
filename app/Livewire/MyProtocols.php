@@ -228,11 +228,11 @@ class MyProtocols extends Component
         $allProtocols = collect();
 
         if ($this->activeTab === 'create') {
-            // Matches for protocol creation or reprocessing
+            // All assigned matches where protocol can be created
             $createMatches = MatchEntity::with([
                 'ownerClub', 'guestClub', 'stadium', 'league', 'season', 'operation',
                 'match_judges' => function($query) {
-                    $query->where('judge_id', auth()->id())->with('type');
+                    $query->where('judge_id', auth()->id())->with('judge_type');
                 },
                 'protocols' => function($query) {
                     $query->where('judge_id', auth()->id());
@@ -245,23 +245,7 @@ class MyProtocols extends Component
                 $q->where('judge_id', auth()->id());
             })
             ->orderBy('start_at', 'desc')
-            ->get()
-            ->filter(function($match) {
-                // Check if judge type matches protocol requirement
-                $requirement = ProtocolRequirement::where('match_id', $match->id)->first();
-                if (!$requirement) {
-                    $requirement = ProtocolRequirement::where('league_id', $match->league_id)
-                        ->orderBy('id', 'desc')
-                        ->first();
-                }
-
-                if ($requirement) {
-                    $judgeType = $match->match_judges->first()?->type_id;
-                    return $judgeType == $requirement->type_id;
-                }
-
-                return false;
-            });
+            ->get();
 
         } elseif ($this->activeTab === 'primary') {
             // Primary approval protocols (view only)
