@@ -7,6 +7,8 @@ use Livewire;
 use Illuminate\Pagination\Paginator;
 use App\Models\Trip;
 use App\Observers\TripObserver;
+use App\Models\Protocol;
+use App\Observers\ProtocolObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,5 +32,6 @@ class AppServiceProvider extends ServiceProvider
 
         // Register observers
         Trip::observe(TripObserver::class);
+        Protocol::observe(ProtocolObserver::class);
     }
 }

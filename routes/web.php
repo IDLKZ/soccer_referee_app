@@ -188,6 +188,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('referee.my-business-trips')
         ->middleware('can:view-own-trips');
 
+    Route::get('/referee/my-protocols', \App\Livewire\MyProtocols::class)
+        ->name('referee.my-protocols')
+        ->middleware('can:view-own-protocols');
+
     // Referee team approval (Head of Refereeing Department)
     Route::get('/referee-team-approval-cards', \App\Livewire\RefereeTeamApprovalCards::class)
         ->name('referee-team-approval-cards')
