@@ -12,6 +12,34 @@
             </p>
         </div>
 
+        <!-- Tabs -->
+        <div class="mb-6">
+            <nav class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-2 flex gap-2">
+                <button wire:click="switchTab('active')"
+                        class="flex-1 px-6 py-3 rounded-lg font-semibold transition-all {{ $activeTab === 'active' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center justify-center">
+                        <i class="fas fa-tasks mr-2"></i>
+                        <span>Активные</span>
+                        <span class="ml-2 {{ $activeTab === 'active' ? 'bg-white/20' : 'bg-purple-100 dark:bg-purple-900/30' }} {{ $activeTab === 'active' ? 'text-white' : 'text-purple-600 dark:text-purple-400' }} px-2.5 py-0.5 rounded-full text-xs font-bold">
+                            {{ $activeCount }}
+                        </span>
+                    </div>
+                    <div class="text-xs opacity-75 mt-1">в работе</div>
+                </button>
+                <button wire:click="switchTab('all')"
+                        class="flex-1 px-6 py-3 rounded-lg font-semibold transition-all {{ $activeTab === 'all' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center justify-center">
+                        <i class="fas fa-archive mr-2"></i>
+                        <span>Все</span>
+                        <span class="ml-2 {{ $activeTab === 'all' ? 'bg-white/20' : 'bg-purple-100 dark:bg-purple-900/30' }} {{ $activeTab === 'all' ? 'text-white' : 'text-purple-600 dark:text-purple-400' }} px-2.5 py-0.5 rounded-full text-xs font-bold">
+                            {{ $allCount }}
+                        </span>
+                    </div>
+                    <div class="text-xs opacity-75 mt-1">история</div>
+                </button>
+            </nav>
+        </div>
+
         <!-- Фильтры и поиск -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -145,8 +173,11 @@
                                 </div>
 
                                 <!-- Подтверждено -->
+                                @php
+                                    $confirmedCount = $match->trips->where('final_status', 1)->count();
+                                @endphp
                                 <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-2 border border-green-200 dark:border-green-800">
-                                    <div class="font-bold text-green-700 dark:text-green-400">{{ $match->confirmed_trips_count }}</div>
+                                    <div class="font-bold text-green-700 dark:text-green-400">{{ $confirmedCount }}</div>
                                     <div class="text-green-600 dark:text-green-500 text-[10px]">Подтверждено</div>
                                 </div>
                             </div>

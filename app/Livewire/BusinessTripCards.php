@@ -15,6 +15,9 @@ class BusinessTripCards extends Component
 {
     use WithPagination;
 
+    // Tabs
+    public $activeTab = 'active'; // 'active' or 'all'
+
     // Фильтры
     public $search = '';
     public $operationFilter = '';
@@ -46,6 +49,15 @@ class BusinessTripCards extends Component
         // Загрузка лиг и сезонов
         $this->leagues = League::orderBy('title_ru')->get();
         $this->seasons = Season::orderBy('start_at', 'desc')->get();
+    }
+
+    /**
+     * Переключение табов
+     */
+    public function switchTab($tab)
+    {
+        $this->activeTab = $tab;
+        $this->resetPage();
     }
 
     /**
@@ -90,6 +102,18 @@ class BusinessTripCards extends Component
 
     public function render()
     {
+        // Определяем активные операции командировок
+        $activeOperations = [
+            'select_responsible_logisticians',
+            'select_transport_departure',
+            'business_trip_plan_preparation',
+            'referee_team_confirmation',
+            'primary_business_trip_confirmation',
+            'final_business_trip_confirmation',
+            'business_trip_registration',
+            'business_trip_plan_reprocessing'
+        ];
+
         // Получение матчей с фильтрацией
         $matches = MatchEntity::query()
             ->with([
@@ -104,17 +128,17 @@ class BusinessTripCards extends Component
                     $query->with('user');
                 }
             ])
-            ->whereHas('operation', function($query) {
-                $query->whereIn('value', [
-                    'select_responsible_logisticians',
-                    'select_transport_departure',
-                    'business_trip_plan_preparation',
-                    'referee_team_confirmation',
-                    'primary_business_trip_confirmation',
-                    'final_business_trip_confirmation',
-                    'business_trip_registration',
-                    'business_trip_plan_reprocessing'
-                ]);
+            ->withCount('trips')
+            // Фильтр по табам
+            ->when($this->activeTab === 'active', function($query) use ($activeOperations) {
+                // Только активные командировки
+                $query->whereHas('operation', function($q) use ($activeOperations) {
+                    $q->whereIn('value', $activeOperations);
+                });
+            })
+            ->when($this->activeTab === 'all', function($query) {
+                // Все матчи, у которых есть хотя бы одна командировка
+                $query->whereHas('trips');
             })
             // Фильтр по поиску
             ->when($this->search, function($query) {
@@ -147,19 +171,17 @@ class BusinessTripCards extends Component
             ->orderBy('start_at', 'desc')
             ->paginate(12);
 
-        // Для каждого матча вычисляем статистику
-        $matches->each(function($match) {
-            // Количество командировок
-            $match->trips_count = $match->trips->count();
+        // Считаем общее количество для табов
+        $activeCount = MatchEntity::whereHas('operation', function($q) use ($activeOperations) {
+            $q->whereIn('value', $activeOperations);
+        })->count();
 
-            // Количество подтвержденных командировок
-            $match->confirmed_trips_count = $match->trips->filter(function($trip) {
-                return $trip->is_confirmed == true;
-            })->count();
-        });
+        $allCount = MatchEntity::whereHas('trips')->count();
 
         return view('livewire.logistician.business-trip-cards', [
-            'matches' => $matches
+            'matches' => $matches,
+            'activeCount' => $activeCount,
+            'allCount' => $allCount
         ])->layout(get_user_layout());
     }
 }
