@@ -91,6 +91,40 @@
             </div>
         @endif
 
+        <!-- Send to Waiting for Protocol Button -->
+        @php
+            $allTripsRegistered = $trips->every(function($trip) {
+                return $trip->operation->value === 'business_trip_registration';
+            });
+        @endphp
+
+        @if($allTripsRegistered && $trips->count() > 0)
+            <div class="mb-6">
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-l-4 border-green-500 rounded-lg p-6 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center">
+                                <i class="fas fa-check-circle text-green-600 dark:text-green-400 mr-2"></i>
+                                Все командировки зарегистрированы
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Все командировки судей находятся в статусе "Регистрация командировки".
+                                Вы можете отправить матч на следующий этап "Ожидание протокола".
+                            </p>
+                        </div>
+                        <div class="ml-6">
+                            <button wire:click="sendToWaitingForProtocol"
+                                    wire:confirm="Вы уверены, что хотите отправить матч на этап 'Ожидание протокола'?"
+                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold whitespace-nowrap">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Отправить на следующий этап
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Список командировок -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">

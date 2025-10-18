@@ -560,6 +560,34 @@ class BusinessTripDetail extends Component
         }
     }
 
+    public function sendToWaitingForProtocol()
+    {
+        try {
+            // Check if all trips are in business_trip_registration
+            $allTripsRegistered = $this->match->trips->every(function($trip) {
+                return $trip->operation->value === 'business_trip_registration';
+            });
+
+            if (!$allTripsRegistered) {
+                session()->flash('error', 'Не все командировки находятся в статусе "Регистрация"');
+                return;
+            }
+
+            // Get waiting_for_protocol operation
+            $waitingForProtocolOperation = Operation::where('value', 'waiting_for_protocol')->firstOrFail();
+
+            // Update match operation
+            $this->match->update([
+                'current_operation_id' => $waitingForProtocolOperation->id
+            ]);
+
+            session()->flash('message', 'Матч успешно отправлен на этап "Ожидание протокола"');
+            $this->loadMatch();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ошибка при отправке матча: ' . $e->getMessage());
+        }
+    }
+
     public function goBack()
     {
         return redirect()->route('business-trip-cards');
