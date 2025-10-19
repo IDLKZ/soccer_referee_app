@@ -38,7 +38,7 @@ class PrimaryProtocolApproval extends Component
             'match.stadium',
             'match.league',
             'match.season',
-            'judge.user',
+            'user',
             'requirement.type',
             'operation'
         ])->findOrFail($protocolId);
@@ -113,7 +113,7 @@ class PrimaryProtocolApproval extends Component
                 'match.stadium',
                 'match.league',
                 'match.season',
-                'judge.user',
+                'user',
                 'requirement.type',
                 'operation'
             ])
@@ -133,14 +133,13 @@ class PrimaryProtocolApproval extends Component
                                ->orWhere('name_en', 'like', "%{$this->search}%");
                       });
                 })
-                ->orWhereHas('judge.user', function($q) {
+                ->orWhereHas('user', function($q) {
                     $q->where('surname', 'like', "%{$this->search}%")
                       ->orWhere('name', 'like', "%{$this->search}%");
                 });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(12);
-
         return view('livewire.refereeing-department.primary-protocol-approval', [
             'protocols' => $protocols,
         ])->layout(get_user_layout());

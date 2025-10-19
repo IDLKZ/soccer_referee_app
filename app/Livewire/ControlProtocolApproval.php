@@ -38,7 +38,7 @@ class ControlProtocolApproval extends Component
             'match.stadium',
             'match.league',
             'match.season',
-            'judge.user',
+            'user',
             'requirement.type',
             'operation'
         ])->findOrFail($protocolId);
@@ -110,7 +110,7 @@ class ControlProtocolApproval extends Component
                 'match.stadium',
                 'match.league',
                 'match.season',
-                'judge.user',
+                'user',
                 'requirement.type',
                 'operation'
             ])
@@ -130,7 +130,7 @@ class ControlProtocolApproval extends Component
                                ->orWhere('name_en', 'like', "%{$this->search}%");
                       });
                 })
-                ->orWhereHas('judge.user', function($q) {
+                ->orWhereHas('user', function($q) {
                     $q->where('surname', 'like', "%{$this->search}%")
                       ->orWhere('name', 'like', "%{$this->search}%");
                 });

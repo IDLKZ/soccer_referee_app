@@ -72,6 +72,11 @@ class ProtocolRequirement extends Model
 		return $this->belongsTo(JudgeType::class);
 	}
 
+	public function type()
+	{
+		return $this->judge_type();
+	}
+
 	public function league()
 	{
 		return $this->belongsTo(League::class);

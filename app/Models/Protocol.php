@@ -73,9 +73,14 @@ class Protocol extends Model
 		return $this->belongsTo(User::class, 'judge_id');
 	}
 
+	public function judge()
+	{
+		return $this->user();
+	}
+
 	public function match()
 	{
-		return $this->belongsTo(MatchEntity::class);
+		return $this->belongsTo(MatchEntity::class,"match_id");
 	}
 
 	public function operation()
@@ -84,6 +89,11 @@ class Protocol extends Model
 	}
 
 	public function protocol_requirement()
+	{
+		return $this->belongsTo(ProtocolRequirement::class, 'requirement_id');
+	}
+
+	public function requirement()
 	{
 		return $this->belongsTo(ProtocolRequirement::class, 'requirement_id');
 	}

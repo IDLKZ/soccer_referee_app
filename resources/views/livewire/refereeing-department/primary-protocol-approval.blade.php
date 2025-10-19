@@ -33,7 +33,6 @@
                 >
             </div>
         </div>
-
         <!-- Protocols Grid -->
         @if($protocols->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
@@ -43,7 +42,7 @@
                         <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-xs font-semibold uppercase tracking-wide opacity-90">
-                                    {{ $protocol->match->league->name_ru ?? 'N/A' }}
+                                    {{ $protocol->match->league->title_ru}}
                                 </span>
                                 <span class="text-xs bg-white/20 px-2 py-1 rounded">
                                     ID: {{ $protocol->match->id }}
@@ -59,19 +58,19 @@
                             <div class="flex items-center justify-between text-sm">
                                 <div class="flex-1">
                                     <div class="font-semibold text-gray-900 dark:text-white">
-                                        {{ $protocol->match->ownerClub->name_ru ?? 'N/A' }}
+                                        {{ $protocol->match->ownerClub->short_name_ru ?? 'N/A' }}
                                     </div>
                                 </div>
                                 <div class="px-3 text-gray-500 dark:text-gray-400 font-bold">VS</div>
                                 <div class="flex-1 text-right">
                                     <div class="font-semibold text-gray-900 dark:text-white">
-                                        {{ $protocol->match->guestClub->name_ru ?? 'N/A' }}
+                                        {{ $protocol->match->guestClub->short_name_ru ?? 'N/A' }}
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-2 text-xs text-gray-600 dark:text-gray-400 flex items-center">
                                 <i class="fas fa-map-marker-alt mr-1"></i>
-                                {{ $protocol->match->stadium->name_ru ?? 'N/A' }}
+                                {{ $protocol->match->stadium->title_ru ?? 'N/A' }}
                             </div>
                         </div>
 
@@ -82,10 +81,10 @@
                                 <div class="flex-1">
                                     <div class="text-xs text-gray-500 dark:text-gray-400">Судья</div>
                                     <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $protocol->judge->user->surname ?? '' }} {{ $protocol->judge->user->name ?? '' }}
+                                        {{ $protocol->user->last_name ?? '' }} {{ $protocol->user->first_name ?? '' }}
                                     </div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ $protocol->requirement->type->name_ru ?? 'N/A' }}
+                                        {{ $protocol->requirement->type->title_ru ?? 'N/A' }}
                                     </div>
                                 </div>
                             </div>
@@ -181,11 +180,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Лига</label>
-                                <p class="text-gray-900 dark:text-white font-medium">{{ $selectedProtocol->match->league->name_ru ?? 'N/A' }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium">{{ $selectedProtocol->match->league->title_ru ?? 'N/A' }}</p>
                             </div>
                             <div>
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Сезон</label>
-                                <p class="text-gray-900 dark:text-white font-medium">{{ $selectedProtocol->match->season->name ?? 'N/A' }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium">{{ $selectedProtocol->match->season->title_ru ?? 'N/A' }}</p>
                             </div>
                             <div>
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Дата и время</label>
@@ -195,14 +194,14 @@
                             </div>
                             <div>
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Стадион</label>
-                                <p class="text-gray-900 dark:text-white font-medium">{{ $selectedProtocol->match->stadium->name_ru ?? 'N/A' }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium">{{ $selectedProtocol->match->stadium->title_ru ?? 'N/A' }}</p>
                             </div>
                             <div class="md:col-span-2">
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Команды</label>
                                 <p class="text-gray-900 dark:text-white font-medium">
-                                    {{ $selectedProtocol->match->ownerClub->name_ru ?? 'N/A' }}
+                                    {{ $selectedProtocol->match->ownerClub->short_name_ru ?? 'N/A' }}
                                     <span class="text-gray-500 mx-2">vs</span>
-                                    {{ $selectedProtocol->match->guestClub->name_ru ?? 'N/A' }}
+                                    {{ $selectedProtocol->match->guestClub->short_name_ru ?? 'N/A' }}
                                 </p>
                             </div>
                         </div>
@@ -218,14 +217,14 @@
                             <div>
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">ФИО</label>
                                 <p class="text-gray-900 dark:text-white font-medium">
-                                    {{ $selectedProtocol->judge->user->surname ?? '' }}
-                                    {{ $selectedProtocol->judge->user->name ?? '' }}
-                                    {{ $selectedProtocol->judge->user->patronymic ?? '' }}
+                                    {{ $selectedProtocol->user->last_name ?? '' }}
+                                    {{ $selectedProtocol->user->first_name ?? '' }}
+                                    {{ $selectedProtocol->user->patronymic ?? '' }}
                                 </p>
                             </div>
                             <div>
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Тип судьи</label>
-                                <p class="text-gray-900 dark:text-white font-medium">{{ $selectedProtocol->requirement->type->name_ru ?? 'N/A' }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium">{{ $selectedProtocol->requirement->type->title_ru ?? 'N/A' }}</p>
                             </div>
                         </div>
                     </div>
