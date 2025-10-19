@@ -240,6 +240,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('primary-financial-check')
         ->middleware('can:manage-finance');
 
+    // Control Financial Check (Finance Department Head)
+    Route::get('/control-financial-check', \App\Livewire\FinanceDepartmentHead\ControlFinancialCheck::class)
+        ->name('control-financial-check')
+        ->middleware('can:manage-finance');
+
     // Business Trip Management (Logistician)
     Route::get('/business-trip-cards', \App\Livewire\BusinessTripCards::class)
         ->name('business-trip-cards')
