@@ -235,6 +235,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('avr-processing')
         ->middleware('can:avr-processing');
 
+    // Primary Financial Check (Finance Department Specialist)
+    Route::get('/primary-financial-check', \App\Livewire\FinanceDepartmentSpecialist\PrimaryFinancialCheck::class)
+        ->name('primary-financial-check')
+        ->middleware('can:manage-finance');
+
     // Business Trip Management (Logistician)
     Route::get('/business-trip-cards', \App\Livewire\BusinessTripCards::class)
         ->name('business-trip-cards')
