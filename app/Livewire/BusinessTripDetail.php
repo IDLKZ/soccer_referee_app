@@ -88,7 +88,8 @@ class BusinessTripDetail extends Component
         $this->match = MatchEntity::with([
             'league', 'season', 'stadium.city', 'operation',
             'ownerClub', 'guestClub',
-            'trips.user', 'trips.operation', 'trips.user.role',
+            'trips.judge', 'trips.operation', 'trips.judge.role',
+            'trips.city', 'trips.transport_type',
             'trips.trip_hotels.hotel_room.hotel',
             'trips.trip_migrations.transport_type',
             'trips.trip_documents'
@@ -497,6 +498,8 @@ class BusinessTripDetail extends Component
     {
         if ($trip->judge_status == 0 && $trip->first_status == 0 && $trip->final_status == 0) {
             return 'referee_team_confirmation';
+        } else if ($trip->judge_status == -1 && $trip->first_status == 0 && $trip->final_status == 0) {
+            return 'referee_team_confirmation';
         } elseif ($trip->judge_status == 1 && $trip->first_status == 0) {
             return 'primary_business_trip_confirmation';
         } elseif ($trip->judge_status == 1 && $trip->first_status == 1) {
@@ -512,7 +515,19 @@ class BusinessTripDetail extends Component
     public function submitForConfirmation($tripId)
     {
         try {
-            $trip = Trip::findOrFail($tripId);
+            $trip = Trip::with(['trip_hotels', 'trip_migrations', 'trip_documents'])->findOrFail($tripId);
+
+            // Validation: Check if trip has at least one hotel OR migration
+            $errors = [];
+
+            if ($trip->trip_hotels->count() === 0 && $trip->trip_migrations->count() === 0) {
+                $errors[] = 'Необходимо добавить хотя бы один отель или маршрут';
+            }
+
+            if (!empty($errors)) {
+                session()->flash('error', implode('. ', $errors));
+                return;
+            }
 
             // Determine next operation for this specific trip
             $nextOperationValue = $this->determineNextOperationForTrip($trip);
@@ -539,7 +554,19 @@ class BusinessTripDetail extends Component
     public function resubmitForReview($tripId)
     {
         try {
-            $trip = Trip::findOrFail($tripId);
+            $trip = Trip::with(['trip_hotels', 'trip_migrations', 'trip_documents'])->findOrFail($tripId);
+
+            // Validation: Check if trip has at least one hotel OR migration
+            $errors = [];
+
+            if ($trip->trip_hotels->count() === 0 && $trip->trip_migrations->count() === 0) {
+                $errors[] = 'Необходимо добавить хотя бы один отель или маршрут';
+            }
+
+            if (!empty($errors)) {
+                session()->flash('error', implode('. ', $errors));
+                return;
+            }
 
             // Determine next operation for this specific trip
             $nextOperationValue = $this->determineNextOperationForTrip($trip);
@@ -551,7 +578,7 @@ class BusinessTripDetail extends Component
 
             // Update this trip's operation
             // Observer will automatically update match operation
-            $trip->update(['operation_id' => $nextOperation->id]);
+            $trip->update(['operation_id' => $nextOperation->id, 'judge_status' => 0, 'judge_comment' => null]);
 
             session()->flash('message', 'Командировка успешно отправлена на новую проверку.');
             $this->loadMatch();

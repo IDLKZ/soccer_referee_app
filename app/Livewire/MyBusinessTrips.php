@@ -198,11 +198,15 @@ class MyBusinessTrips extends Component
             ->whereHas('operation', function($query) {
                 $query->where('value', 'select_transport_departure');
             })
+            ->whereHas('match_judges', function($query) {
+                $query->where('judge_id', auth()->id());
+            })
             ->whereDoesntHave('trips', function($query) {
                 $query->where('judge_id', auth()->id());
             })
             ->orderBy('start_at', 'asc')
             ->get();
+
 
         // Tab 2: Awaiting Confirmation
         $awaitingConfirmation = Trip::with([

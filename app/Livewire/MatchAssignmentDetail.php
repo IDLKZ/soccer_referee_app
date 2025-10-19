@@ -299,69 +299,144 @@ class MatchAssignmentDetail extends Component
     }
 
     /**
-     * Проверка: можно ли отправить на рассмотрение директору
+     * Проверка: можно ли отправить конкретную заявку судьи директору
      * Условия:
-     * 1. Статус матча: match_created_waiting_referees или referee_reassignment
-     * 2. По каждому обязательному типу (is_required == true) количество утвержденных судей (judge_response == 1 и final_status == 0) == qty
+     * 1. judge_response == 1 (судья согласился)
+     * 2. final_status == 0 (еще не утвержден директором)
+     * 3. operation_id == 1 (или NULL - статус после согласия судьи)
      */
-    public function canSubmitToDirector()
+    public function canSubmitToDirector($matchJudgeId)
     {
-        $operationValue = $this->match->operation->value;
+        $matchJudge = MatchJudge::find($matchJudgeId);
 
-        if (!in_array($operationValue, ['match_created_waiting_referees', 'referee_reassignment'])) {
+        if (!$matchJudge) {
             return false;
         }
 
-        // Проверка по каждому обязательному требованию
-        foreach ($this->match->judge_requirements as $requirement) {
-            if ($requirement->is_required) {
-                // Подсчет судей с ответом "согласен" но еще не утвержденных директором
-                $count = MatchJudge::where('match_id', $this->matchId)
-                    ->where('type_id', $requirement->judge_type_id)
-                    ->where('judge_response', 1)
-                    ->where('final_status', 0)
-                    ->count();
-
-                if ($count < $requirement->qty) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return $matchJudge->judge_response == 1
+            && $matchJudge->final_status == 0
+            && ($matchJudge->operation_id == 1 || $matchJudge->operation_id === null);
     }
 
     /**
-     * Отправка на рассмотрение директору
-     * Меняет статус матча на referee_team_approval
+     * Отправка конкретной заявки судьи на рассмотрение директору
+     * Обновляет operation_id заявки на 2
+     * Проверяет, все ли заявки отправлены, и обновляет статус матча
      */
-    public function submitToDirector()
+    public function submitSingleToDirector($matchJudgeId)
     {
-        if (!$this->canSubmitToDirector()) {
-            session()->flash('error', 'Не выполнены условия для отправки на рассмотрение директору');
+        if (!$this->canSubmitToDirector($matchJudgeId)) {
+            session()->flash('error', 'Эта заявка не может быть отправлена директору');
             return;
         }
 
         try {
-            // Получение операции referee_team_approval
-            $approvalOperation = \App\Models\Operation::where('value', 'referee_team_approval')->first();
+            $matchJudge = MatchJudge::findOrFail($matchJudgeId);
 
-            if (!$approvalOperation) {
-                throw new \Exception('Операция referee_team_approval не найдена');
-            }
-
-            // Обновление статуса матча
-            $this->match->update([
-                'current_operation_id' => $approvalOperation->id,
+            // Обновляем operation_id на 2 (ожидание рассмотрения директором)
+            $matchJudge->update([
+                'operation_id' => 2
             ]);
+
+            session()->flash('message', 'Заявка судьи отправлена на рассмотрение директору');
+
+            // Проверяем, все ли требования выполнены, и обновляем статус матча
+            $this->checkAndUpdateMatchOperation();
 
             // Обновление данных
             $this->loadMatch();
 
-            session()->flash('message', 'Матч отправлен на рассмотрение директору департамента');
-
         } catch (\Exception $e) {
             session()->flash('error', 'Ошибка при отправке: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Проверка всех заявок и обновление operation матча
+     * Если все требования выполнены (по количеству judge_requirements):
+     * - judge_response == 1
+     * - final_status == 1 (утверждены директором)
+     * - operation_id == 2
+     * То переходим на следующий этап
+     */
+    protected function checkAndUpdateMatchOperation()
+    {
+        // Проверяем, все ли требования выполнены
+        $allRequirementsMet = true;
+
+        foreach ($this->match->judge_requirements as $requirement) {
+            if ($requirement->is_required) {
+                $count = MatchJudge::where('match_id', $this->matchId)
+                    ->where('type_id', $requirement->judge_type_id)
+                    ->where('judge_response', 1)
+                    ->where('final_status', 1)
+                    ->where('operation_id', 2)
+                    ->count();
+
+                if ($count < $requirement->qty) {
+                    $allRequirementsMet = false;
+                    break;
+                }
+            }
+        }
+
+        // Если все требования выполнены - переходим на следующий этап
+        if ($allRequirementsMet) {
+            $this->transitionToNextStage();
+        } else {
+            // Проверяем, все ли заявки имеют operation_id == 2 (отправлены директору)
+            $allSubmittedToDirector = true;
+
+            foreach ($this->match->judge_requirements as $requirement) {
+                if ($requirement->is_required) {
+                    $count = MatchJudge::where('match_id', $this->matchId)
+                        ->where('type_id', $requirement->judge_type_id)
+                        ->where('judge_response', 1)
+                        ->where('final_status', 0)
+                        ->where('operation_id', 2)
+                        ->count();
+
+                    if ($count < $requirement->qty) {
+                        $allSubmittedToDirector = false;
+                        break;
+                    }
+                }
+            }
+
+            // Если все отправлены директору - меняем статус матча на referee_team_approval
+            if ($allSubmittedToDirector) {
+                $approvalOperation = \App\Models\Operation::where('value', 'referee_team_approval')->first();
+                if ($approvalOperation) {
+                    $this->match->update([
+                        'current_operation_id' => $approvalOperation->id
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Переход на следующий этап после утверждения всех заявок директором
+     * Проверяет наличие логистов и переходит либо на select_transport_departure,
+     * либо на select_responsible_logisticians
+     */
+    protected function transitionToNextStage()
+    {
+        // Проверяем, есть ли у матча логисты
+        $hasLogisticians = $this->match->match_logists()->exists();
+
+        if ($hasLogisticians) {
+            // Переходим на этап выбора транспорта
+            $operation = \App\Models\Operation::where('value', 'select_transport_departure')->first();
+        } else {
+            // Переходим на этап выбора логистов
+            $operation = \App\Models\Operation::where('value', 'select_responsible_logisticians')->first();
+        }
+
+        if ($operation) {
+            $this->match->update([
+                'current_operation_id' => $operation->id
+            ]);
         }
     }
 

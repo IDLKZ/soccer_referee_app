@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $judge_response
  * @property string|null $cancel_reason
  * @property int $final_status
+ * @property int|null $operation_id
  * @property int|null $created_by_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property User $user
  * @property Match $match
  * @property JudgeType $judge_type
+ * @property Operation $operation
  *
  * @package App\Models
  */
@@ -39,6 +41,7 @@ class MatchJudge extends Model
 		'judge_id' => 'int',
 		'judge_response' => 'int',
 		'final_status' => 'int',
+		'operation_id' => 'int',
 		'created_by_id' => 'int'
 	];
 
@@ -49,6 +52,7 @@ class MatchJudge extends Model
 		'judge_response',
 		'cancel_reason',
 		'final_status',
+		'operation_id',
 		'created_by_id'
 	];
 
@@ -65,5 +69,10 @@ class MatchJudge extends Model
 	public function judge_type()
 	{
 		return $this->belongsTo(JudgeType::class, 'type_id');
+	}
+
+	public function operation()
+	{
+		return $this->belongsTo(Operation::class);
 	}
 }

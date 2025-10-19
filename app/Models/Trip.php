@@ -36,7 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property City|null $city
  * @property User|null $user
- * @property Match $match
+ * @property MatchEntity $match
  * @property Operation $operation
  * @property TransportType $transport_type
  * @property Collection|TripDocument[] $trip_documents
@@ -91,6 +91,11 @@ class Trip extends Model
 	public function user()
 	{
 		return $this->belongsTo(User::class, 'logist_id');
+	}
+
+	public function judge()
+	{
+		return $this->belongsTo(User::class, 'judge_id');
 	}
 
 	public function match()

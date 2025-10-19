@@ -41,16 +41,10 @@ class RefereeTeamApprovalCards extends Component
 
     /**
      * Получение матчей, требующих утверждения судейской бригады
+     * Матчи, у которых есть заявки с operation_id == 2, judge_response == 1 и final_status == 0
      */
     public function getMatches()
     {
-        // Получаем операцию referee_team_approval
-        $approvalOperation = Operation::where('value', 'referee_team_approval')->first();
-
-        if (!$approvalOperation) {
-            return collect([]);
-        }
-
         $query = MatchEntity::with([
             'league',
             'season',
@@ -60,13 +54,20 @@ class RefereeTeamApprovalCards extends Component
             'ownerClub',
             'guestClub',
             'match_judges' => function($q) {
-                // Только те, кто согласился (judge_response == 1)
-                $q->where('judge_response', 1);
+                // Только те, кто согласился и ожидают утверждения директора
+                $q->where('judge_response', 1)
+                  ->where('final_status', 0)
+                  ->where('operation_id', 2);
             },
             'match_judges.user',
             'match_judges.judge_type',
         ])
-        ->where('current_operation_id', $approvalOperation->id);
+        ->whereHas('match_judges', function($q) {
+            // Проверяем, что есть хотя бы одна заявка с operation_id == 2
+            $q->where('judge_response', 1)
+              ->where('final_status', 0)
+              ->where('operation_id', 2);
+        });
 
         // Поиск
         if ($this->search) {

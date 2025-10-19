@@ -153,10 +153,10 @@
                             @endif
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap">
-                            @if($requirement->judgeType)
+                            @if($requirement->judge_type)
                             <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 dark:from-indigo-900/40 dark:to-purple-900/40 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700">
                                 <i class="fas fa-user-shield mr-1.5 text-indigo-600 dark:text-indigo-400"></i>
-                                {{ $requirement->judgeType->title_ru }}
+                                {{ $requirement->judge_type->title_ru }}
                             </span>
                             @else
                             <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
@@ -253,10 +253,10 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        <i class="fas fa-trophy mr-1"></i> Лига
+                                        <i class="fas fa-trophy mr-1"></i> Лига*
                                     </label>
-                                    <select wire:model="leagueId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                        <option value="">Все лиги</option>
+                                    <select wire:model.live="leagueId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="">Выберите лигу</option>
                                         @foreach($leagues as $league)
                                         <option value="{{ $league->id }}">{{ $league->title_ru }}</option>
                                         @endforeach
@@ -265,10 +265,10 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        <i class="fas fa-user-shield mr-1"></i> Тип судьи
+                                        <i class="fas fa-user-shield mr-1"></i> Тип судьи*
                                     </label>
-                                    <select wire:model="judgeTypeId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                        <option value="">Все типы</option>
+                                    <select wire:model.live="judgeTypeId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="">Выберите тип судьи</option>
                                         @foreach($judgeTypes as $type)
                                         <option value="{{ $type->id }}">{{ $type->title_ru }}</option>
                                         @endforeach
@@ -279,9 +279,17 @@
 
                             <div class="mt-4">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    <i class="fas fa-hashtag mr-1"></i> ID матча (необязательно)
+                                    <i class="fas fa-futbol mr-1"></i> Матч (необязательно)
                                 </label>
-                                <input type="text" wire:model="matchId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Оставьте пустым для всех матчей">
+                                <select wire:model="matchId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="">Для всех матчей лиги</option>
+                                    @foreach($matches as $match)
+                                    <option value="{{ $match->id }}">
+                                        {{ $match->ownerClub->short_name_ru ?? $match->ownerClub->title_ru }} - {{ $match->guestClub->short_name_ru ?? $match->guestClub->title_ru }}
+                                        ({{ \Carbon\Carbon::parse($match->start_at)->format('d.m.Y') }})
+                                    </option>
+                                    @endforeach
+                                </select>
                                 @error('matchId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             </div>
                         </div>
@@ -461,10 +469,10 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        <i class="fas fa-trophy mr-1"></i> Лига
+                                        <i class="fas fa-trophy mr-1"></i> Лига*
                                     </label>
-                                    <select wire:model="leagueId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                        <option value="">Все лиги</option>
+                                    <select wire:model.live="leagueId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="">Выберите лигу</option>
                                         @foreach($leagues as $league)
                                         <option value="{{ $league->id }}">{{ $league->title_ru }}</option>
                                         @endforeach
@@ -473,10 +481,10 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        <i class="fas fa-user-shield mr-1"></i> Тип судьи
+                                        <i class="fas fa-user-shield mr-1"></i> Тип судьи*
                                     </label>
-                                    <select wire:model="judgeTypeId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                        <option value="">Все типы</option>
+                                    <select wire:model.live="judgeTypeId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="">Выберите тип судьи</option>
                                         @foreach($judgeTypes as $type)
                                         <option value="{{ $type->id }}">{{ $type->title_ru }}</option>
                                         @endforeach
@@ -487,9 +495,17 @@
 
                             <div class="mt-4">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    <i class="fas fa-hashtag mr-1"></i> ID матча (необязательно)
+                                    <i class="fas fa-futbol mr-1"></i> Матч (необязательно)
                                 </label>
-                                <input type="text" wire:model="matchId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Оставьте пустым для всех матчей">
+                                <select wire:model="matchId" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="">Для всех матчей лиги</option>
+                                    @foreach($matches as $match)
+                                    <option value="{{ $match->id }}">
+                                        {{ $match->ownerClub->short_name_ru ?? $match->ownerClub->title_ru }} - {{ $match->guestClub->short_name_ru ?? $match->guestClub->title_ru }}
+                                        ({{ \Carbon\Carbon::parse($match->start_at)->format('d.m.Y') }})
+                                    </option>
+                                    @endforeach
+                                </select>
                                 @error('matchId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             </div>
                         </div>

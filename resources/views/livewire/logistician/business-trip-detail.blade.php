@@ -24,7 +24,7 @@
                     </span>
                 </div>
 
-    
+
                 <!-- Информация о матче -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-white/90">
                     <div>
@@ -147,10 +147,10 @@
                                         </div>
                                         <div>
                                             <div class="font-semibold text-gray-900 dark:text-gray-100">
-                                                {{ $trip->user->surname_ru ?? '' }} {{ $trip->user->name_ru ?? '' }} {{ $trip->user->patronymic_ru ?? '' }}
+                                                {{ $trip->judge->last_name ?? '' }} {{ $trip->judge->first_name ?? '' }} {{ $trip->judge->patronomic ?? '' }}
                                             </div>
                                             <div class="text-xs text-gray-600 dark:text-gray-400">
-                                                {{ $trip->user->role->title_ru ?? 'Роль не указана' }}
+                                                {{ $trip->judge->role->title_ru ?? 'Роль не указана' }}
                                             </div>
                                         </div>
                                     </div>
@@ -164,10 +164,15 @@
                                             <i class="fas fa-tasks mr-1"></i>
                                             {{ $trip->operation->title_ru ?? 'Операция не указана' }}
                                         </span>
-                                        @if($trip->is_confirmed)
+                                        @if($trip->judge_status == 1)
                                             <span class="ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400">
                                                 <i class="fas fa-check-circle mr-1"></i>
                                                 Подтверждено
+                                            </span>
+                                        @elseif($trip->judge_status == -1)
+                                            <span class="ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400">
+                                                <i class="fas fa-times-circle mr-1"></i>
+                                                Отклонено
                                             </span>
                                         @else
                                             <span class="ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400">
@@ -177,27 +182,85 @@
                                         @endif
                                     </div>
 
+                                    <!-- Trip Details: Departure City and Transport Type -->
+                                    <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        @if($trip->city)
+                                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="fas fa-map-marker-alt text-blue-600 dark:text-blue-400 text-lg"></i>
+                                                    </div>
+                                                    <div class="ml-3">
+                                                        <div class="text-xs text-blue-700 dark:text-blue-300 font-semibold uppercase tracking-wide">
+                                                            Город отправления
+                                                        </div>
+                                                        <div class="text-sm text-gray-900 dark:text-gray-100 font-medium mt-0.5">
+                                                            {{ $trip->city->title_ru }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        @if($trip->transport_type)
+                                            <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="fas fa-{{ $trip->transport_type->value === 'plane' ? 'plane' : ($trip->transport_type->value === 'train' ? 'train' : 'car') }} text-purple-600 dark:text-purple-400 text-lg"></i>
+                                                    </div>
+                                                    <div class="ml-3">
+                                                        <div class="text-xs text-purple-700 dark:text-purple-300 font-semibold uppercase tracking-wide">
+                                                            Тип транспорта
+                                                        </div>
+                                                        <div class="text-sm text-gray-900 dark:text-gray-100 font-medium mt-0.5">
+                                                            {{ $trip->transport_type->title_ru }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Judge Comment Block (if rejected) -->
+                                    @if($trip->judge_status == -1 && $trip->judge_comment)
+                                        <div class="mt-3 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-l-4 border-red-500 rounded-lg p-4 shadow-sm">
+                                            <div class="flex items-start">
+                                                <div class="flex-shrink-0 mt-0.5">
+                                                    <i class="fas fa-comment-dots text-red-600 dark:text-red-400 text-lg"></i>
+                                                </div>
+                                                <div class="ml-3 flex-1">
+                                                    <h4 class="text-xs font-semibold text-red-800 dark:text-red-300 uppercase tracking-wide mb-1">
+                                                        Комментарий судьи
+                                                    </h4>
+                                                    <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                                        {{ $trip->judge_comment }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     <!-- Статистика командировки -->
                                     <div class="flex items-center gap-4 text-sm">
                                         <!-- Отели -->
                                         <div class="flex items-center text-gray-600 dark:text-gray-400">
                                             <i class="fas fa-hotel mr-2 text-blue-500"></i>
                                             <span class="font-semibold">{{ $trip->trip_hotels->count() }}</span>
-                                            <span class="ml-1">{{ \Illuminate\Support\Str::plural('отель', $trip->trip_hotels->count()) }}</span>
+                                            <span class="ml-1">{{ pluralize_ru($trip->trip_hotels->count(), ['отель', 'отеля', 'отелей']) }}</span>
                                         </div>
 
                                         <!-- Миграции (транспорт) -->
                                         <div class="flex items-center text-gray-600 dark:text-gray-400">
                                             <i class="fas fa-route mr-2 text-green-500"></i>
                                             <span class="font-semibold">{{ $trip->trip_migrations->count() }}</span>
-                                            <span class="ml-1">{{ \Illuminate\Support\Str::plural('маршрут', $trip->trip_migrations->count()) }}</span>
+                                            <span class="ml-1">{{ pluralize_ru($trip->trip_migrations->count(), ['маршрут', 'маршрута', 'маршрутов']) }}</span>
                                         </div>
 
                                         <!-- Документы -->
                                         <div class="flex items-center text-gray-600 dark:text-gray-400">
                                             <i class="fas fa-file-alt mr-2 text-purple-500"></i>
                                             <span class="font-semibold">{{ $trip->trip_documents->count() }}</span>
-                                            <span class="ml-1">{{ \Illuminate\Support\Str::plural('документ', $trip->trip_documents->count()) }}</span>
+                                            <span class="ml-1">{{ pluralize_ru($trip->trip_documents->count(), ['документ', 'документа', 'документов']) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -208,7 +271,6 @@
                                     <div class="flex gap-2">
                                         @if($trip->operation->value === 'business_trip_plan_preparation')
                                             <button wire:click="submitForConfirmation({{ $trip->id }})"
-                                                    wire:confirm="Вы уверены, что хотите отправить эту командировку на подтверждение?"
                                                     class="inline-flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm shadow-md">
                                                 <i class="fas fa-paper-plane mr-2"></i>
                                                 Отправить на подтверждение
@@ -217,7 +279,6 @@
 
                                         @if($trip->operation->value === 'business_trip_plan_reprocessing')
                                             <button wire:click="resubmitForReview({{ $trip->id }})"
-                                                    wire:confirm="Вы уверены, что хотите отправить эту командировку на новую проверку?"
                                                     class="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm shadow-md">
                                                 <i class="fas fa-redo mr-2"></i>
                                                 Отправить на проверку

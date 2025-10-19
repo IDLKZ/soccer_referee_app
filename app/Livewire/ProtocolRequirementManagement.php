@@ -20,6 +20,7 @@ class ProtocolRequirementManagement extends Component
 
     public $leagues = [];
     public $judgeTypes = [];
+    public $matches = [];
     public $showCreateModal = false;
     public $showEditModal = false;
     public $editingRequirementId = null;
@@ -153,6 +154,28 @@ class ProtocolRequirementManagement extends Component
         $this->judgeTypes = JudgeType::where('is_active', true)->get();
     }
 
+    public function updatedLeagueId($value)
+    {
+        $this->loadMatches();
+    }
+
+    public function updatedJudgeTypeId($value)
+    {
+        $this->loadMatches();
+    }
+
+    public function loadMatches()
+    {
+        if ($this->leagueId) {
+            $this->matches = \App\Models\MatchEntity::where('league_id', $this->leagueId)
+                ->with(['ownerClub', 'guestClub'])
+                ->orderBy('start_at', 'desc')
+                ->get();
+        } else {
+            $this->matches = [];
+        }
+    }
+
     public function createRequirement()
     {
         $this->authorize('manage-protocol-requirements');
@@ -211,6 +234,9 @@ class ProtocolRequirementManagement extends Component
         $this->isRequired = $requirement->is_required;
         $this->extensions = is_array($requirement->extensions) ? implode(', ', $requirement->extensions) : $requirement->extensions;
         $this->existingFiles = $requirement->example_file_url ?? [];
+
+        // Load matches for selected league
+        $this->loadMatches();
 
         $this->showEditModal = true;
     }

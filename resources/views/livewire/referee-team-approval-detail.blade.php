@@ -124,15 +124,6 @@
 
                 <!-- Кнопки действий -->
                 <div class="mt-6 flex flex-wrap gap-3">
-                    @if($this->hasRejectedRequiredJudge())
-                        <button wire:click="sendForRevision"
-                                wire:confirm="Вы уверены, что хотите отправить на доработку?"
-                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-lg shadow-md transition-all transform hover:scale-105">
-                            <i class="fas fa-redo mr-2"></i>
-                            Отправить на доработку
-                        </button>
-                    @endif
-
                     @if($this->allRequiredJudgesApproved())
                         @php
                             $logistsCount = \App\Models\MatchLogist::where('match_id', $matchId)->count();

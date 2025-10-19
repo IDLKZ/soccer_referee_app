@@ -58,8 +58,9 @@ class RefereeTeamApprovalDetail extends Component
             'guestClub',
             'judge_requirements.judge_type',
             'match_judges' => function($q) {
-                // Только те, кто согласился (judge_response == 1)
-                $q->where('judge_response', 1);
+                // Только те, кто согласился и отправлены директору на рассмотрение
+                $q->where('judge_response', 1)
+                  ->where('operation_id', 2);
             },
             'match_judges.user',
             'match_judges.judge_type',
@@ -78,7 +79,9 @@ class RefereeTeamApprovalDetail extends Component
      */
     public function calculateStatistics()
     {
-        $judges = $this->match->match_judges->where('judge_response', 1);
+        $judges = $this->match->match_judges
+            ->where('judge_response', 1)
+            ->where('operation_id', 2);
 
         $this->waitingCount = $judges->where('final_status', 0)->count();
         $this->approvedCount = $judges->where('final_status', 1)->count();
@@ -203,6 +206,7 @@ class RefereeTeamApprovalDetail extends Component
                 $rejectedCount = MatchJudge::where('match_id', $this->matchId)
                     ->where('type_id', $requirement->judge_type_id)
                     ->where('judge_response', 1)
+                    ->where('operation_id', 2)
                     ->where('final_status', -1)
                     ->count();
 
@@ -225,6 +229,7 @@ class RefereeTeamApprovalDetail extends Component
                 $approvedCount = MatchJudge::where('match_id', $this->matchId)
                     ->where('type_id', $requirement->judge_type_id)
                     ->where('judge_response', 1)
+                    ->where('operation_id', 2)
                     ->where('final_status', 1)
                     ->count();
 
@@ -317,7 +322,9 @@ class RefereeTeamApprovalDetail extends Component
      */
     public function getJudgesForTab()
     {
-        $judges = $this->match->match_judges->where('judge_response', 1);
+        $judges = $this->match->match_judges
+            ->where('judge_response', 1)
+            ->where('operation_id', 2);
 
         switch ($this->activeTab) {
             case 'waiting':

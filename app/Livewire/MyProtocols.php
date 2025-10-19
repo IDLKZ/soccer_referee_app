@@ -76,10 +76,16 @@ class MyProtocols extends Component
                 'file' => null,
             ];
         } else {
+            // Check if requirement exists
+            if (!$requirement) {
+                session()->flash('error', 'Для этого матча не найдены требования к протоколу. Обратитесь к администратору.');
+                return;
+            }
+
             $this->protocolForm = [
                 'id' => null,
                 'match_id' => $matchId,
-                'requirement_id' => $requirement?->id,
+                'requirement_id' => $requirement->id,
                 'info' => '',
                 'file' => null,
             ];
@@ -97,9 +103,12 @@ class MyProtocols extends Component
     public function saveProtocol()
     {
         $this->validate([
+            'protocolForm.requirement_id' => 'required|exists:protocol_requirements,id',
             'protocolForm.info' => 'nullable|string|max:1000',
             'file' => 'nullable|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png',
         ], [
+            'protocolForm.requirement_id.required' => 'Требование к протоколу не найдено. Обратитесь к администратору.',
+            'protocolForm.requirement_id.exists' => 'Требование к протоколу не существует.',
             'file.max' => 'Размер файла не должен превышать 10 МБ',
             'file.mimes' => 'Файл должен быть в формате: pdf, doc, docx, jpg, jpeg, png',
         ]);

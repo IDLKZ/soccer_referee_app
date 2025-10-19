@@ -130,14 +130,6 @@
                     </button>
                 @endif
 
-                @if($this->canSubmitToDirector())
-                    <button wire:click="submitToDirector"
-                            wire:confirm="Вы уверены, что хотите отправить состав на рассмотрение директору?"
-                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg shadow-md transition-all transform hover:scale-105">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        Отправить на рассмотрение директору
-                    </button>
-                @endif
             </div>
         </div>
 
@@ -263,6 +255,18 @@
                                         </div>
                                     @endif
                                 </div>
+
+                                <!-- Кнопка отправки директору для конкретной заявки -->
+                                @if($this->canSubmitToDirector($judge->id))
+                                    <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                        <button wire:click="submitSingleToDirector({{ $judge->id }})"
+                                                wire:confirm="Отправить заявку этого судьи на рассмотрение директору?"
+                                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm rounded-md shadow-sm transition-all transform hover:scale-105">
+                                            <i class="fas fa-paper-plane mr-2"></i>
+                                            Отправить директору
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>
