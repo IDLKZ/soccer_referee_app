@@ -469,6 +469,11 @@ class AuthServiceProvider extends ServiceProvider
             return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
         });
 
+        // Просмотр собственных АВР (для судей)
+        Gate::define('view-own-avr', function (User $user) {
+            return $user->role && $user->role->value === RoleConstants::SOCCER_REFEREE;
+        });
+
         // Первичное утверждение протоколов (для сотрудников департамента судейства)
         Gate::define('approve-primary-protocols', function (User $user) {
             return $user->role && in_array($user->role->value, [

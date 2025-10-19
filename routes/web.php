@@ -192,6 +192,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('referee.my-protocols')
         ->middleware('can:view-own-protocols');
 
+    Route::get('/referee/my-act-of-works', \App\Livewire\Referee\MyActOfWorks::class)
+        ->name('referee.my-act-of-works')
+        ->middleware('can:view-own-avr');
+
     // Referee team approval (Head of Refereeing Department)
     Route::get('/referee-team-approval-cards', \App\Livewire\RefereeTeamApprovalCards::class)
         ->name('referee-team-approval-cards')

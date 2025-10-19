@@ -21,6 +21,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $judge_id
  * @property string $customer_info
  * @property bool|null $judge_status
+ * @property string|null $judge_comment
+ * @property string|null $control_comment
+ * @property string|null $first_financial_comment
+ * @property string|null $last_financial_comment
  * @property bool|null $first_status
  * @property bool|null $control_status
  * @property bool|null $first_financial_status
@@ -71,6 +75,10 @@ class ActOfWork extends Model
 		'judge_id',
 		'customer_info',
 		'judge_status',
+		'judge_comment',
+		'control_comment',
+		'first_financial_comment',
+		'last_financial_comment',
 		'first_status',
 		'control_status',
 		'first_financial_status',
