@@ -146,7 +146,7 @@ class MatchEntity extends Model
 
 	public function act_of_works()
 	{
-		return $this->hasMany(ActOfWork::class);
+		return $this->hasMany(ActOfWork::class, 'match_id');
 	}
 
 	public function judge_requirements()

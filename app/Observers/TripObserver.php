@@ -56,11 +56,26 @@ class TripObserver
      */
     private function updateMatchOperation(Trip $trip): void
     {
+        // Get the match with judges
+        $match = MatchEntity::with('match_judges')->find($trip->match_id);
+
+        if (!$match) {
+            return;
+        }
+
         // Get all active trips for this match
-        $allTrips = Trip::where('match_id', $trip->match_id)
-            ->get();
+        $allTrips = Trip::where('match_id', $trip->match_id)->get();
 
         if ($allTrips->isEmpty()) {
+            return;
+        }
+
+        // Count match judges (утвержденные судьи на матч)
+        $matchJudgesCount = $match->match_judges()->count();
+
+        // Check if number of trips equals number of match judges
+        // Пока все trips не созданы для всех судей - не меняем статус
+        if ($allTrips->count() !== $matchJudgesCount) {
             return;
         }
 

@@ -235,6 +235,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('avr-processing')
         ->middleware('can:avr-processing');
 
+    // AVR Approval by Committee (Judge Inspector)
+    Route::get('/avr-approval-by-committee', \App\Livewire\AvrApprovalByCommittee::class)
+        ->name('avr-approval-by-committee')
+        ->middleware('can:avr-approval-by-committee');
+
+    // Act of Payments (Accountant)
+    Route::get('/act-of-payments', \App\Livewire\ActOfPayments::class)
+        ->name('act-of-payments')
+        ->middleware('can:manage-act-payments');
+
     // Primary Financial Check (Finance Department Specialist)
     Route::get('/primary-financial-check', \App\Livewire\FinanceDepartmentSpecialist\PrimaryFinancialCheck::class)
         ->name('primary-financial-check')

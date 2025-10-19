@@ -217,4 +217,21 @@ class User extends Authenticatable
 	{
 		return $this->hasMany(Trip::class, 'logist_id');
 	}
+
+	/**
+	 * Generate a unique username from email.
+	 */
+	public static function generateUniqueUsername(string $email): string
+	{
+		$username = explode('@', $email)[0];
+		$baseUsername = $username;
+		$counter = 1;
+
+		while (self::where('username', $username)->exists()) {
+			$username = $baseUsername . $counter;
+			$counter++;
+		}
+
+		return $username;
+	}
 }

@@ -203,13 +203,13 @@
                     @if(\App\Models\ActOfPayment::count() > 0)
                     <div class="space-y-3">
                         @php
-                        $recentPayments = \App\Models\ActOfPayment::with(['workAct.judge', 'checkedBy'])->latest()->take(5)->get();
+                        $recentPayments = \App\Models\ActOfPayment::with(['act_of_work.user', 'user'])->latest()->take(5)->get();
                         @endphp
                         @foreach($recentPayments as $payment)
                         <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                             <div>
                                 <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {{ $payment->workAct->judge->full_name ?? '-' }}
+                                    {{ $payment->act_of_work->user->last_name ?? '' }} {{ $payment->act_of_work->user->first_name ?? '-' }}
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ number_format($payment->amount ?? 0, 2, ',', ' ') }} ₸

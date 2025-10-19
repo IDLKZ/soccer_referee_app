@@ -14,29 +14,16 @@ class RefereeManagement extends Component
 {
     public $referees = [];
     public $showCreateModal = false;
+    public $showEditModal = false;
+    public $editingRefereeId = null;
 
-    #[Validate('required|string|max:255')]
     public $lastName = '';
-
-    #[Validate('required|string|max:255')]
     public $firstName = '';
-
-    #[Validate('nullable|string|max:255')]
     public $patronomic = '';
-
-    #[Validate('required|string|max:12|unique:users,iin')]
     public $iin = '';
-
-    #[Validate('required|string|max:20|unique:users,phone')]
     public $phone = '';
-
-    #[Validate('required|email|unique:users,email')]
     public $email = '';
-
-    #[Validate('required|integer|min:1|max:2')]
     public $sex = 1;
-
-    #[Validate('nullable|date')]
     public $birthDate = '';
 
     #[Locked]
@@ -72,12 +59,22 @@ class RefereeManagement extends Component
     {
         $this->authorize('manage-referees');
 
-        $this->validate();
+        $this->validate([
+            'lastName' => 'required|string|max:255',
+            'firstName' => 'required|string|max:255',
+            'patronomic' => 'nullable|string|max:255',
+            'iin' => 'required|string|max:12|unique:users,iin',
+            'phone' => 'required|string|max:20|unique:users,phone',
+            'email' => 'required|email|unique:users,email',
+            'sex' => 'required|integer|min:1|max:2',
+            'birthDate' => 'nullable|date',
+        ]);
 
         $refereeRole = \App\Models\Role::where('value', RoleConstants::SOCCER_REFEREE)->first();
 
         User::create([
             'role_id' => $refereeRole->id,
+            'username' => User::generateUniqueUsername($this->email),
             'last_name' => $this->lastName,
             'first_name' => $this->firstName,
             'patronomic' => $this->patronomic,
@@ -95,6 +92,78 @@ class RefereeManagement extends Component
         $this->loadReferees();
 
         session()->flash('message', 'Судья успешно создан');
+    }
+
+    public function editReferee($refereeId)
+    {
+        $this->authorize('manage-referees');
+
+        $referee = User::findOrFail($refereeId);
+
+        // Проверяем, что это действительно судья
+        if ($referee->role->value !== RoleConstants::SOCCER_REFEREE) {
+            abort(403, 'Вы можете редактировать только судей');
+        }
+
+        $this->editingRefereeId = $refereeId;
+        $this->lastName = $referee->last_name;
+        $this->firstName = $referee->first_name;
+        $this->patronomic = $referee->patronomic ?? '';
+        $this->iin = $referee->iin ?? '';
+        $this->phone = $referee->phone;
+        $this->email = $referee->email;
+        $this->sex = $referee->sex;
+        $this->birthDate = $referee->birth_date ? $referee->birth_date->format('Y-m-d') : '';
+
+        $this->showEditModal = true;
+    }
+
+    public function updateReferee()
+    {
+        $this->authorize('manage-referees');
+
+        $this->validate([
+            'lastName' => 'required|string|max:255',
+            'firstName' => 'required|string|max:255',
+            'patronomic' => 'nullable|string|max:255',
+            'iin' => 'required|string|max:12|unique:users,iin,' . $this->editingRefereeId,
+            'phone' => 'required|string|max:20|unique:users,phone,' . $this->editingRefereeId,
+            'email' => 'required|email|unique:users,email,' . $this->editingRefereeId,
+            'sex' => 'required|integer|min:1|max:2',
+            'birthDate' => 'nullable|date',
+        ]);
+
+        $referee = User::findOrFail($this->editingRefereeId);
+
+        $referee->update([
+            'last_name' => $this->lastName,
+            'first_name' => $this->firstName,
+            'patronomic' => $this->patronomic,
+            'iin' => $this->iin,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'sex' => $this->sex,
+            'birth_date' => $this->birthDate,
+        ]);
+
+        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'sex', 'birthDate', 'showEditModal', 'editingRefereeId']);
+        $this->loadReferees();
+
+        session()->flash('message', 'Судья успешно обновлен');
+    }
+
+    public function closeCreateModal()
+    {
+        $this->showCreateModal = false;
+        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'sex', 'birthDate']);
+        $this->resetValidation();
+    }
+
+    public function closeEditModal()
+    {
+        $this->showEditModal = false;
+        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'sex', 'birthDate', 'editingRefereeId']);
+        $this->resetValidation();
     }
 
     public function deleteReferee($refereeId)

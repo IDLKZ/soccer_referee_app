@@ -60,6 +60,10 @@ class UserManagement extends Component
     #[Validate('nullable|date')]
     public $birthDate = '';
 
+    public $isVerified = false;
+    public $password = '';
+    public $repeatPassword = '';
+
     #[Locked]
     public $canCreate = false;
 
@@ -132,7 +136,20 @@ class UserManagement extends Component
     {
         $this->authorize('create-users');
 
-        $this->validate();
+        $this->validate([
+            'lastName' => 'required|string|max:255',
+            'firstName' => 'required|string|max:255',
+            'patronomic' => 'nullable|string|max:255',
+            'iin' => 'required|string|max:12|unique:users,iin',
+            'phone' => 'required|string|max:20|unique:users,phone',
+            'email' => 'required|email|unique:users,email',
+            'username' => 'required|string|max:255|unique:users,username',
+            'roleId' => 'required|exists:roles,id',
+            'sex' => 'required|integer|min:1|max:2',
+            'birthDate' => 'nullable|date',
+            'password' => 'required|string|min:6',
+            'repeatPassword' => 'required|same:password',
+        ]);
 
         User::create([
             'role_id' => $this->roleId,
@@ -146,11 +163,11 @@ class UserManagement extends Component
             'sex' => $this->sex,
             'birth_date' => $this->birthDate ?: null,
             'is_active' => true,
-            'is_verified' => false,
-            'password_hash' => bcrypt('admin123'), // Пароль по умолчанию
+            'is_verified' => $this->isVerified,
+            'password_hash' => bcrypt($this->password),
         ]);
 
-        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'username', 'roleId', 'sex', 'birthDate', 'showCreateModal']);
+        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'username', 'roleId', 'sex', 'birthDate', 'isVerified', 'password', 'repeatPassword', 'showCreateModal']);
 
         session()->flash('message', 'Пользователь успешно создан');
 
@@ -174,6 +191,9 @@ class UserManagement extends Component
         $this->roleId = $user->role_id;
         $this->sex = $user->sex;
         $this->birthDate = $user->birth_date ? $user->birth_date->format('Y-m-d') : '';
+        $this->isVerified = $user->is_verified;
+        $this->password = '';
+        $this->repeatPassword = '';
 
         $this->showEditModal = true;
     }
@@ -184,7 +204,7 @@ class UserManagement extends Component
 
         $user = User::findOrFail($this->editingUserId);
 
-        $this->validate([
+        $validationRules = [
             'lastName' => 'required|string|max:255',
             'firstName' => 'required|string|max:255',
             'patronomic' => 'nullable|string|max:255',
@@ -195,9 +215,17 @@ class UserManagement extends Component
             'roleId' => 'required|exists:roles,id',
             'sex' => 'required|integer|min:1|max:2',
             'birthDate' => 'nullable|date',
-        ]);
+        ];
 
-        $user->update([
+        // Validate password only if provided
+        if (!empty($this->password)) {
+            $validationRules['password'] = 'required|string|min:6';
+            $validationRules['repeatPassword'] = 'required|same:password';
+        }
+
+        $this->validate($validationRules);
+
+        $updateData = [
             'role_id' => $this->roleId,
             'last_name' => $this->lastName,
             'first_name' => $this->firstName,
@@ -208,9 +236,17 @@ class UserManagement extends Component
             'username' => $this->username,
             'sex' => $this->sex,
             'birth_date' => $this->birthDate ?: null,
-        ]);
+            'is_verified' => $this->isVerified,
+        ];
 
-        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'username', 'roleId', 'sex', 'birthDate', 'showEditModal', 'editingUserId']);
+        // Update password if provided
+        if (!empty($this->password)) {
+            $updateData['password_hash'] = bcrypt($this->password);
+        }
+
+        $user->update($updateData);
+
+        $this->reset(['lastName', 'firstName', 'patronomic', 'iin', 'phone', 'email', 'username', 'roleId', 'sex', 'birthDate', 'isVerified', 'password', 'repeatPassword', 'showEditModal', 'editingUserId']);
 
         session()->flash('message', 'Пользователь успешно обновлен');
 

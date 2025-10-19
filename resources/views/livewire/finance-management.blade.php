@@ -135,7 +135,7 @@
                             @foreach($workActs as $workAct)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $workAct->judge->full_name ?? 'Судья ' . $workAct->judge_id }}
+                                    {{ $workAct->user->last_name ?? '' }} {{ $workAct->user->first_name ?? 'Судья ' . $workAct->judge_id }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $workAct->match->title_ru ?? 'Матч ' . $workAct->match->id }}
@@ -211,10 +211,10 @@
                             @foreach($payments as $payment)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    #{{ $payment->workAct->id ?? $payment->id }}
+                                    #{{ $payment->act_of_work->id ?? $payment->id }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $payment->workAct->judge->full_name ?? '-' }}
+                                    {{ $payment->act_of_work->user->last_name ?? '' }} {{ $payment->act_of_work->user->first_name ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ number_format($payment->amount ?? 0, 2, ',', ' ') }} ₸
@@ -228,7 +228,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $payment->checkedBy->full_name ?? '-' }}
+                                    {{ $payment->user->last_name ?? '' }} {{ $payment->user->first_name ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     @if($canApprovePayments && $payment->status === 'pending')

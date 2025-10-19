@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property int $act_id
  * @property array $file_urls
+ * @property string|null $info
  * @property string $status
  * @property int $checked_by
  * @property Carbon|null $created_at
@@ -35,12 +36,14 @@ class ActOfPayment extends Model
 	protected $casts = [
 		'act_id' => 'int',
 		'file_urls' => 'json',
+		'info' => 'json',
 		'checked_by' => 'int'
 	];
 
 	protected $fillable = [
 		'act_id',
 		'file_urls',
+		'info',
 		'status',
 		'checked_by'
 	];

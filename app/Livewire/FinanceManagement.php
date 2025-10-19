@@ -58,10 +58,10 @@ class FinanceManagement extends Component
         } else {
             // Финансовые сотрудники видят все данные
             $this->trips = Trip::with(['match', 'city'])->get();
-            $this->workActs = ActOfWork::with(['match', 'trip', 'judge'])->get();
+            $this->workActs = ActOfWork::with(['match', 'trip', 'user'])->get();
         }
 
-        $this->payments = ActOfPayment::with(['workAct.match', 'checkedBy'])->get();
+        $this->payments = ActOfPayment::with(['act_of_work.match', 'user'])->get();
     }
 
     public function approvePayment($paymentId)

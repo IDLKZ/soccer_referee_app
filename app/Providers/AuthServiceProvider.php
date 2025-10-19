@@ -678,5 +678,22 @@ class AuthServiceProvider extends ServiceProvider
                 RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
             ]);
         });
+
+        // Утверждение АВР судейским комитетом
+        Gate::define('avr-approval-by-committee', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::SOCCER_REFEREE,
+            ]);
+        });
+
+        // Управление оплатными документами АВР (Бухгалтер)
+        Gate::define('manage-act-payments', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_ACCOUNTANT,
+            ]);
+        });
     }
 }

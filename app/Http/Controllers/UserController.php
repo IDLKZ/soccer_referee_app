@@ -45,6 +45,11 @@ class UserController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Generate username from email if not provided
+        if (empty($validated['username'])) {
+            $validated['username'] = User::generateUniqueUsername($validated['email']);
+        }
+
         $validated['password'] = Hash::make($validated['password']);
 
         User::create($validated);

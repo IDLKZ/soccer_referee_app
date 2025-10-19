@@ -54,6 +54,7 @@ class RegisteredUserController extends Controller
 
         $user = User::create([
             'role_id' => $request->role_id,
+            'username' => User::generateUniqueUsername($request->email),
             'last_name' => $request->last_name,
             'first_name' => $request->first_name,
             'patronomic' => $request->patronomic,
