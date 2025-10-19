@@ -221,6 +221,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('control-protocol-approval')
         ->middleware('can:approve-control-protocols');
 
+    // AVR Processing (Refereeing Department Employee)
+    Route::get('/avr-processing', \App\Livewire\AvrProcessing::class)
+        ->name('avr-processing')
+        ->middleware('can:avr-processing');
+
     // Business Trip Management (Logistician)
     Route::get('/business-trip-cards', \App\Livewire\BusinessTripCards::class)
         ->name('business-trip-cards')

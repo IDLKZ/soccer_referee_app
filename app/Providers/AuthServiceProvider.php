@@ -664,5 +664,14 @@ class AuthServiceProvider extends ServiceProvider
                 RoleConstants::REFEREEING_DEPARTMENT_ACCOUNTANT,
             ]);
         });
+
+        // Управление АВР (Акты выполненных работ)
+        Gate::define('avr-processing', function (User $user) {
+            return $user->role && in_array($user->role->value, [
+                RoleConstants::ADMINISTRATOR,
+                RoleConstants::REFEREEING_DEPARTMENT_HEAD,
+                RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE,
+            ]);
+        });
     }
 }
