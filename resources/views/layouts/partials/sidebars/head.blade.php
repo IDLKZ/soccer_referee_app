@@ -47,6 +47,19 @@
                 <i class="fas fa-shield-check w-5"></i>
                 <span class="ml-3">Финальная проверка протоколов</span>
             </a>
+
+            <!-- AVR (Act of Works) -->
+            <div class="pt-4">
+                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    АВР
+                </p>
+            </div>
+
+            <a href="{{ route('avr-approval-by-committee') }}"
+               class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('avr-approval-by-committee') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                <i class="fas fa-clipboard-check w-5"></i>
+                <span class="ml-3">Проверка АВР</span>
+            </a>
         </nav>
     </div>
 </aside>

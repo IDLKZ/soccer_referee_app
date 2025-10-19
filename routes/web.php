@@ -196,6 +196,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('referee.my-act-of-works')
         ->middleware('can:view-own-avr');
 
+    // AVR Committee Approval (Head of Refereeing Department)
+    Route::get('/avr-approval-by-committee', \App\Livewire\RefereeingDepartmentHead\AvrApprovalByCommittee::class)
+        ->name('avr-approval-by-committee')
+        ->middleware('can:approve-referee-team');
+
     // Referee team approval (Head of Refereeing Department)
     Route::get('/referee-team-approval-cards', \App\Livewire\RefereeTeamApprovalCards::class)
         ->name('referee-team-approval-cards')
