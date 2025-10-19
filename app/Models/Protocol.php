@@ -48,8 +48,8 @@ class Protocol extends Model
 		'match_id' => 'int',
 		'requirement_id' => 'int',
 		'judge_id' => 'int',
-		'first_status' => 'bool',
-		'final_status' => 'bool',
+		'first_status' => 'int',
+		'final_status' => 'int',
 		'is_ready' => 'bool'
 	];
 

@@ -314,7 +314,6 @@ class AvrProcessing extends Component
     public function resendForReview($avrId)
     {
         $avr = ActOfWork::findOrFail($avrId);
-
         if ($avr->judge_status == -1) {
             // Rejected by judge - send back to judge confirmation
             $operation = Operation::where('value', 'referee_confirmation')->firstOrFail();

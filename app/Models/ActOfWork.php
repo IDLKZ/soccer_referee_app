@@ -58,12 +58,12 @@ class ActOfWork extends Model
 		'protocol_id' => 'int',
 		'operation_id' => 'int',
 		'judge_id' => 'int',
-		'judge_status' => 'bool',
-		'first_status' => 'bool',
-		'control_status' => 'bool',
-		'first_financial_status' => 'bool',
-		'last_financial_status' => 'bool',
-		'final_status' => 'bool',
+		'judge_status' => 'int',
+		'first_status' => 'int',
+		'control_status' => 'int',
+		'first_financial_status' => 'int',
+		'last_financial_status' => 'int',
+		'final_status' => 'int',
 		'act_date' => 'datetime',
 		'is_ready' => 'bool'
 	];
