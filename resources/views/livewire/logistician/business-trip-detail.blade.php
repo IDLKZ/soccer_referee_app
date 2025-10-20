@@ -98,7 +98,7 @@
             });
         @endphp
 
-        @if($allTripsRegistered && $trips->count() > 0 && in_array($match->operation_id,[5,6,7,8,9,10,11]))
+        @if($allTripsRegistered && $trips->count() > 0)
             <div class="mb-6">
                 <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-l-4 border-green-500 rounded-lg p-6 shadow-md">
                     <div class="flex items-center justify-between">
