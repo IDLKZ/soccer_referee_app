@@ -184,18 +184,43 @@
             </div>
 
             @can('view-own-protocols')
+                @php
+                    $myReworkProtocolsCount = \App\Models\Protocol::where('judge_id', auth()->id())
+                        ->whereHas('operation', function($q) {
+                            $q->where('value', 'protocol_reprocessing');
+                        })->count();
+                @endphp
                 <a href="{{ route('referee.my-protocols') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('referee.my-protocols') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-file-alt w-5"></i>
-                    <span class="ml-3">Загрузка протоколов</span>
+                   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('referee.my-protocols') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center">
+                        <i class="fas fa-file-alt w-5"></i>
+                        <span class="ml-3">Загрузка протоколов</span>
+                    </div>
+                    @if($myReworkProtocolsCount > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {{ $myReworkProtocolsCount }}
+                        </span>
+                    @endif
                 </a>
             @endcan
 
             @can('avr-approval-by-committee')
+                @php
+                    $avrApprovalCount = \App\Models\ActOfWork::whereHas('operation', function($q) {
+                        $q->where('value', 'avr_committee_approval');
+                    })->count();
+                @endphp
                 <a href="{{ route('avr-approval-by-committee') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('avr-approval-by-committee') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-gavel w-5"></i>
-                    <span class="ml-3">Утверждение АВР комитетом</span>
+                   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('avr-approval-by-committee') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center">
+                        <i class="fas fa-gavel w-5"></i>
+                        <span class="ml-3">Утверждение АВР комитетом</span>
+                    </div>
+                    @if($avrApprovalCount > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {{ $avrApprovalCount }}
+                        </span>
+                    @endif
                 </a>
             @endcan
 
