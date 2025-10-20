@@ -98,7 +98,7 @@
             });
         @endphp
 
-        @if($allTripsRegistered && $trips->count() > 0)
+        @if($allTripsRegistered && $trips->count() > 0 && in_array($match->operation_id,[5,6,7,8,9,10,11]))
             <div class="mb-6">
                 <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-l-4 border-green-500 rounded-lg p-6 shadow-md">
                     <div class="flex items-center justify-between">
@@ -192,10 +192,13 @@
                                                     </div>
                                                     <div class="ml-3">
                                                         <div class="text-xs text-blue-700 dark:text-blue-300 font-semibold uppercase tracking-wide">
-                                                            Город отправления
+                                                            Город отправления - прибытия
                                                         </div>
                                                         <div class="text-sm text-gray-900 dark:text-gray-100 font-medium mt-0.5">
                                                             {{ $trip->city->title_ru }}
+                                                            @if($trip->arrival_city)
+                                                               - {{ $trip->arrival_city->title_ru }}
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
@@ -439,7 +442,7 @@
                                     <option value="">Выберите номер</option>
                                     @foreach($hotelRooms as $room)
                                         <option value="{{ $room->id }}">
-                                            Номер {{ $room->number }} ({{ $room->type_ru ?? 'Тип не указан' }})
+                                            Номер {{ $room->number }} ({{ $room->title_ru ?? 'Тип не указан' }})
                                         </option>
                                     @endforeach
                                 </select>
@@ -512,8 +515,8 @@
                                             </div>
                                             <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
                                                 <i class="fas fa-door-open mr-2"></i>
-                                                Номер: {{ $tripHotel->hotel_room->number ?? 'Н/Д' }}
-                                                ({{ $tripHotel->hotel_room->type_ru ?? 'Тип не указан' }})
+                                                Номер: {{ $tripHotel->hotel_room->title_ru ?? 'Н/Д' }}
+                                                ({{ $tripHotel->hotel_room->description_ru ?? 'Тип не указан' }})
                                             </div>
                                             <div class="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
                                                 <div>

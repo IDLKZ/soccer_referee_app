@@ -61,7 +61,8 @@ class PrimaryBusinessTripConfirmation extends Component
             'trip_migrations.departure_city',
             'trip_migrations.arrival_city',
             'trip_migrations.transport_type',
-            'trip_documents'
+            'trip_documents',
+            'judge'
         ])->findOrFail($tripId);
 
         $this->showDetailModal = true;
@@ -124,6 +125,9 @@ class PrimaryBusinessTripConfirmation extends Component
                 'match.season',
                 'operation',
                 'user.role',
+                'judge',
+                "arrival_city",
+                "city"
             ])
             ->whereHas('operation', function($q) {
                 $q->where('value', 'primary_business_trip_confirmation');

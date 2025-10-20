@@ -32,11 +32,16 @@ class MatchEntityView extends Component
             'judge_requirements.judge_type',
             'match_deadlines.operation',
             'match_logists.user',
-            'match_judges.user',
-            'match_judges.judge_type',
+            'match_judges' => function ($query) {
+                $query->where('judge_response', 1)
+                    ->where('final_status', 1)
+                    ->with('user', 'judge_type'); // чтобы подгрузить user и judge_type внутри
+            },
             'protocols',
             'trips.user',
-        ])->findOrFail($id);
+        ])
+            ->findOrFail($id);
+
 
         // Загружаем клубы отдельно для полной информации
         $this->ownerClub = Club::find($this->match->owner_club_id);

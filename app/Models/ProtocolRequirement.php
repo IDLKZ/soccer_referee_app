@@ -84,7 +84,7 @@ class ProtocolRequirement extends Model
 
 	public function match()
 	{
-		return $this->belongsTo(MatchEntity::class);
+		return $this->belongsTo(MatchEntity::class,"match_id");
 	}
 
 	public function protocols()

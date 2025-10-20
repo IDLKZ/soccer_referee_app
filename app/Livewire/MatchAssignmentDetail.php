@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\JudgeRequirement;
 use App\Models\MatchEntity;
 use App\Models\MatchJudge;
 use App\Models\User;
@@ -270,6 +271,7 @@ class MatchAssignmentDetail extends Component
                 'judge_response' => 0, // Ожидание ответа
                 'final_status' => 0,   // Ожидание финального утверждения
                 'cancel_reason' => null,
+                'operation_id' => 1
             ]);
 
             // Обновление данных
@@ -293,9 +295,33 @@ class MatchAssignmentDetail extends Component
      */
     public function canSendInvitations()
     {
+        $all_field = true;
         $operationValue = $this->match->operation->value;
-
-        return in_array($operationValue, ['match_created_waiting_referees', 'referee_reassignment']);
+        $required_judge_requirements_qty = JudgeRequirement::where("match_id", $this->matchId)->pluck('qty', 'judge_type_id')->toArray();
+        $nowadays_count = MatchJudge::where('match_id', $this->matchId)
+            ->whereIn('judge_response', [0, 1])
+            ->whereIn('final_status', [0, 1])
+            ->selectRaw('type_id, COUNT(*) as total_qty')
+            ->groupBy('type_id')
+            ->pluck('total_qty', 'type_id')
+            ->toArray();
+        foreach ($required_judge_requirements_qty as $type_id => $judge_qty) {
+            if(key_exists($type_id, $nowadays_count)) {
+                if ($nowadays_count[$type_id] == $judge_qty) {
+                    $all_field = false;
+                }
+                else{
+                    $all_field = true;
+                    break;
+                }
+            }
+            else {
+                $all_field = true;
+                break;
+            }
+        }
+        $check_in_status =  in_array($operationValue, ['match_created_waiting_referees', 'referee_reassignment',"referee_team_approval"]);
+        return $check_in_status && $all_field;
     }
 
     /**

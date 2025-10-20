@@ -262,6 +262,8 @@ class RefereeTeamApprovalDetail extends Component
             $this->match->update([
                 'current_operation_id' => $reassignmentOperation->id,
             ]);
+            $judge = MatchJudge::findOrFail($this->selectedJudgeId);
+            $judge->update(['operation_id' => $reassignmentOperation->id]);
 
             session()->flash('message', 'Матч отправлен на доработку');
             return redirect()->route('referee-team-approval-cards');

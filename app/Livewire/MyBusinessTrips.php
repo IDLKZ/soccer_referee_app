@@ -75,7 +75,7 @@ class MyBusinessTrips extends Component
             return;
         }
 
-        $match = MatchEntity::with(['ownerClub', 'guestClub', 'match_judges'])->findOrFail($matchId);
+        $match = MatchEntity::with(['ownerClub', 'guestClub', 'match_judges','stadium'])->findOrFail($matchId);
 
         // Get business_trip_plan_preparation operation
         $operation = Operation::where('value', 'business_trip_plan_preparation')->firstOrFail();
@@ -86,6 +86,7 @@ class MyBusinessTrips extends Component
             'judge_id' => auth()->id(),
             'operation_id' => $operation->id,
             'departure_city_id' => $this->transportForm['departure_city_id'],
+            'arrival_city_id' => $match->stadium->city_id ?? $match->ownerClub->city_id,
             'transport_type_id' => $this->transportForm['transport_type_id'],
             'name' => ($match->ownerClub->short_name_ru ?? $match->ownerClub->title_ru) . ' - ' . ($match->guestClub->short_name_ru ?? $match->guestClub->title_ru),
             'departure_date' => $match->start_at,
@@ -200,6 +201,8 @@ class MyBusinessTrips extends Component
             })
             ->whereHas('match_judges', function($query) {
                 $query->where('judge_id', auth()->id());
+                $query->where('judge_response', 1);
+                $query->where('final_status', 1);
             })
             ->whereDoesntHave('trips', function($query) {
                 $query->where('judge_id', auth()->id());

@@ -88,6 +88,11 @@ class Trip extends Model
 		return $this->belongsTo(City::class, 'departure_city_id');
 	}
 
+    public function arrival_city()
+    {
+        return $this->belongsTo(City::class, 'arrival_city_id');
+    }
+
 	public function user()
 	{
 		return $this->belongsTo(User::class, 'logist_id');

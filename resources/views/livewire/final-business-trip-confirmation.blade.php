@@ -209,11 +209,11 @@
                                 </div>
                                 <div class="flex-1">
                                     <div class="text-sm font-bold text-gray-900 dark:text-gray-100">
-                                        {{ $trip->user->surname_ru ?? '' }} {{ $trip->user->name_ru ?? '' }}
+                                        {{ $trip->judge?->full_name ?? 'Судья не указан' }}
                                     </div>
                                     <div class="text-xs text-gray-600 dark:text-gray-400 flex items-center mt-1">
                                         <i class="fas fa-id-badge mr-1"></i>
-                                        {{ $trip->user->role->title_ru ?? 'Судья' }}
+                                        {{ $trip->judge?->role?->title_ru ?? 'Судья' }}
                                     </div>
                                 </div>
                             </div>
@@ -309,7 +309,7 @@
                         </h3>
                         <p class="text-sm text-purple-100 mt-2 flex items-center">
                             <i class="fas fa-user mr-2"></i>
-                            {{ $selectedTrip->user->surname_ru ?? '' }} {{ $selectedTrip->user->name_ru ?? '' }}
+                            {{ $selectedTrip->judge?->full_name ?? 'Судья не указан' }}
                         </p>
                     </div>
                     <button wire:click="closeDetailModal"
@@ -383,13 +383,13 @@
                             <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">ФИО</label>
                                 <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">
-                                    {{ $selectedTrip->user->surname_ru ?? '' }} {{ $selectedTrip->user->name_ru ?? '' }} {{ $selectedTrip->user->patronymic_ru ?? '' }}
+                                    {{ $selectedTrip->judge?->full_name ?? 'Судья не указан' }}
                                 </p>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Роль</label>
                                 <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">
-                                    {{ $selectedTrip->user->role->title_ru ?? 'Не указана' }}
+                                    {{ $selectedTrip->judge?->role?->title_ru ?? 'Не указана' }}
                                 </p>
                             </div>
                         </div>
@@ -471,10 +471,10 @@
                                                 Прибытие: {{ \Carbon\Carbon::parse($tripMigration->to_date)->format('d.m.Y H:i') }}
                                             </div>
                                         </div>
-                                        @if($tripMigration->info)
+                                        @if($trip->arrival_city && $trip->city)
                                             <div class="mt-2 text-xs text-gray-600 dark:text-gray-400 italic bg-white dark:bg-gray-800 px-3 py-2 rounded-lg">
                                                 <i class="fas fa-info-circle mr-1"></i>
-                                                {{ $tripMigration->info }}
+                                                {{ $trip->city->title_ru }} - {{$trip->arrival_city->title_ru}}
                                             </div>
                                         @endif
                                     </div>

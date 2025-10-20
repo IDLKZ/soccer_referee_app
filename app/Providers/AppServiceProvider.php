@@ -11,6 +11,8 @@ use App\Models\Protocol;
 use App\Observers\ProtocolObserver;
 use App\Models\ActOfWork;
 use App\Observers\ActOfWorkObserver;
+use App\Models\MatchJudge;
+use App\Observers\MatchJudgeObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,5 +38,6 @@ class AppServiceProvider extends ServiceProvider
         Trip::observe(TripObserver::class);
         Protocol::observe(ProtocolObserver::class);
         ActOfWork::observe(ActOfWorkObserver::class);
+        MatchJudge::observe(MatchJudgeObserver::class);
     }
 }

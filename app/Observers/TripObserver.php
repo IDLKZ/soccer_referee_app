@@ -14,6 +14,7 @@ class TripObserver
     public function created(Trip $trip): void
     {
         $this->updateMatchOperation($trip);
+        $this->checkAndMoveToBusinessTripPlanPreparation($trip);
     }
 
     /**
@@ -79,21 +80,8 @@ class TripObserver
             return;
         }
 
-        // Check if all trips have the same status pattern
-        $firstTrip = $allTrips->first();
-        $allSamePattern = $allTrips->every(function ($t) use ($firstTrip) {
-            return $t->judge_status === $firstTrip->judge_status
-                && $t->first_status === $firstTrip->first_status
-                && $t->final_status === $firstTrip->final_status;
-        });
-
-        // Only update match operation if all trips have the same status pattern
-        if (!$allSamePattern) {
-            return;
-        }
-
-        // Determine the operation based on the common status pattern
-        $operationValue = $this->determineOperationValue($firstTrip);
+        // Determine the operation based on all trips' statuses
+        $operationValue = $this->determineOperationValueForAllTrips($allTrips);
 
         if ($operationValue) {
             $operation = Operation::where('value', $operationValue)->first();
@@ -107,18 +95,71 @@ class TripObserver
     }
 
     /**
-     * Determine the operation value based on trip statuses
+     * Determine the operation value based on ALL trips' statuses
      */
-    private function determineOperationValue(Trip $trip): ?string
+    private function determineOperationValueForAllTrips($allTrips): ?string
     {
-        if ($trip->judge_status == 0 && $trip->first_status == 0 && $trip->final_status == 0) {
-            return 'referee_team_confirmation';
-        } elseif ($trip->judge_status == 1 && $trip->first_status == 0) {
-            return 'primary_business_trip_confirmation';
-        } elseif ($trip->judge_status == 1 && $trip->first_status == 1) {
+        // Rule 1: All trips have judge_status == 1, first_status == 1, final_status == 1
+        // → business_trip_registration
+        if ($allTrips->every(fn($t) => $t->judge_status == 1 && $t->first_status == 1 && $t->final_status == 1)) {
+            return 'business_trip_registration';
+        }
+
+        // Rule 2: All trips have judge_status == 1, first_status == 1, final_status in (0, -1)
+        // → final_business_trip_confirmation
+        if ($allTrips->every(fn($t) => $t->judge_status == 1 && $t->first_status == 1 && in_array($t->final_status, [0, -1]))) {
             return 'final_business_trip_confirmation';
         }
 
+        // Rule 3: All trips have judge_status == 1, first_status in (0, -1), final_status in (0, -1)
+        // → primary_business_trip_confirmation
+        if ($allTrips->every(fn($t) => $t->judge_status == 1 && in_array($t->first_status, [0, -1]) && in_array($t->final_status, [0, -1]))) {
+            return 'primary_business_trip_confirmation';
+        }
+
+        // Rule 4: All trips have judge_status == 0, first_status == 0, final_status == 0
+        // → referee_team_confirmation
+        if ($allTrips->every(fn($t) => $t->judge_status == 0 && $t->first_status == 0 && $t->final_status == 0)) {
+            return 'referee_team_confirmation';
+        }
+
         return null;
+    }
+
+    /**
+     * Check if all trips are created and move match to business_trip_plan_preparation
+     * Only triggers when a trip is created and match is in select_transport_departure stage
+     */
+    private function checkAndMoveToBusinessTripPlanPreparation(Trip $trip): void
+    {
+        // Get the match with its current operation
+        $match = MatchEntity::with(['operation', 'match_judges'])->find($trip->match_id);
+
+        if (!$match || !$match->operation) {
+            return;
+        }
+
+        // Only proceed if match is in select_transport_departure stage
+        if ($match->operation->value !== 'select_transport_departure') {
+            return;
+        }
+
+        // Count total match judges
+        $matchJudgesCount = $match->match_judges()->count();
+
+        // Count total trips created for this match
+        $tripsCount = Trip::where('match_id', $trip->match_id)->count();
+
+        // If all trips are created (trips count equals match judges count)
+        if ($tripsCount === $matchJudgesCount && $matchJudgesCount > 0) {
+            // Get business_trip_plan_preparation operation
+            $businessTripPlanOperation = Operation::where('value', 'business_trip_plan_preparation')->first();
+
+            if ($businessTripPlanOperation) {
+                // Update match operation without triggering events
+                MatchEntity::where('id', $trip->match_id)
+                    ->update(['current_operation_id' => $businessTripPlanOperation->id]);
+            }
+        }
     }
 }

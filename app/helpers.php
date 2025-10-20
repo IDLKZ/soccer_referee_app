@@ -43,13 +43,13 @@ if (!function_exists('get_user_layout')) {
 
         return match ($user->role->value) {
             \App\Constants\RoleConstants::ADMINISTRATOR => 'layouts.admin',
-            \App\Constants\RoleConstants::HEAD_OF_REFEREEING_DEPARTMENT => 'layouts.head',
-            \App\Constants\RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE => 'layouts.refereeing-employee',
+            \App\Constants\RoleConstants::REFEREEING_DEPARTMENT_HEAD => 'layouts.head',
+            \App\Constants\RoleConstants::REFEREEING_DEPARTMENT_EMPLOYEE => 'layouts.employee',
             \App\Constants\RoleConstants::SOCCER_REFEREE => 'layouts.referee',
-            \App\Constants\RoleConstants::LOGISTICIAN => 'layouts.logistician',
+            \App\Constants\RoleConstants::REFEREEING_DEPARTMENT_LOGISTICIAN => 'layouts.logistician',
             \App\Constants\RoleConstants::FINANCE_DEPARTMENT_SPECIALIST => 'layouts.financial-specialist',
             \App\Constants\RoleConstants::FINANCE_DEPARTMENT_HEAD => 'layouts.financial-head',
-            \App\Constants\RoleConstants::ACCOUNTANT => 'layouts.accountant',
+            \App\Constants\RoleConstants::REFEREEING_DEPARTMENT_ACCOUNTANT => 'layouts.accountant',
             default => 'layouts.app',
         };
     }

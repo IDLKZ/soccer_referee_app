@@ -89,7 +89,7 @@ class BusinessTripDetail extends Component
             'league', 'season', 'stadium.city', 'operation',
             'ownerClub', 'guestClub',
             'trips.judge', 'trips.operation', 'trips.judge.role',
-            'trips.city', 'trips.transport_type',
+            'trips.city', 'trips.arrival_city', 'trips.transport_type',
             'trips.trip_hotels.hotel_room.hotel',
             'trips.trip_migrations.transport_type',
             'trips.trip_documents'
@@ -496,13 +496,23 @@ class BusinessTripDetail extends Component
      */
     public function determineNextOperationForTrip($trip)
     {
-        if ($trip->judge_status == 0 && $trip->first_status == 0 && $trip->final_status == 0) {
+        // Rule 1: judge_status == 0 or -1, and first_status == 0, final_status == 0
+        if (($trip->judge_status == 0 || $trip->judge_status == -1)
+            && $trip->first_status == 0
+            && $trip->final_status == 0) {
             return 'referee_team_confirmation';
-        } else if ($trip->judge_status == -1 && $trip->first_status == 0 && $trip->final_status == 0) {
-            return 'referee_team_confirmation';
-        } elseif ($trip->judge_status == 1 && $trip->first_status == 0) {
+        }
+
+        // Rule 2: judge_status == 1, first_status in (0, -1)
+        if ($trip->judge_status == 1
+            && ($trip->first_status == 0 || $trip->first_status == -1)) {
             return 'primary_business_trip_confirmation';
-        } elseif ($trip->judge_status == 1 && $trip->first_status == 1) {
+        }
+
+        // Rule 3: judge_status == 1, first_status == 1, final_status in (0, -1)
+        if ($trip->judge_status == 1
+            && $trip->first_status == 1
+            && ($trip->final_status == 0 || $trip->final_status == -1)) {
             return 'final_business_trip_confirmation';
         }
 
@@ -568,6 +578,32 @@ class BusinessTripDetail extends Component
                 return;
             }
 
+            // Reset rejected statuses (-1) to pending (0)
+
+            // Reset judge_status if it was rejected
+            if ($trip->judge_status == -1) {
+                $updateData['judge_status'] = 0;
+                $updateData['judge_comment'] = null;
+            }
+
+            // Reset first_status if it was rejected
+            if ($trip->first_status == -1) {
+                $updateData['first_status'] = 0;
+                $updateData['first_comment'] = null;
+            }
+
+            // Reset final_status if it was rejected
+            if ($trip->final_status == -1) {
+                $updateData['final_status'] = 0;
+                $updateData['final_comment'] = null;
+            }
+
+            // Apply the status resets first
+            $trip->update($updateData);
+
+            // Reload the trip with updated statuses
+            $trip->refresh();
+
             // Determine next operation for this specific trip
             $nextOperationValue = $this->determineNextOperationForTrip($trip);
             $nextOperation = Operation::where('value', $nextOperationValue)->first();
@@ -578,7 +614,7 @@ class BusinessTripDetail extends Component
 
             // Update this trip's operation
             // Observer will automatically update match operation
-            $trip->update(['operation_id' => $nextOperation->id, 'judge_status' => 0, 'judge_comment' => null]);
+            $trip->update(['operation_id' => $nextOperation->id]);
 
             session()->flash('message', 'Командировка успешно отправлена на новую проверку.');
             $this->loadMatch();

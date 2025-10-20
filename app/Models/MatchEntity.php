@@ -181,7 +181,7 @@ class MatchEntity extends Model
 
 	public function protocol_requirements()
 	{
-		return $this->hasMany(ProtocolRequirement::class);
+		return $this->hasMany(ProtocolRequirement::class, 'match_id');
 	}
 
 	public function protocols()

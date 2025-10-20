@@ -48,15 +48,29 @@ class MyProtocols extends Component
     public function openProtocolModal($matchId)
     {
         $match = MatchEntity::with(['match_judges' => function($query) {
-            $query->where('judge_id', auth()->id());
+            $query->where('judge_id', auth()->id())
+                  ->where('judge_response', 1)
+                  ->where('final_status', 1)
+                  ->with('judge_type');
         }])->findOrFail($matchId);
 
-        // Get protocol requirement for this match
-        $requirement = ProtocolRequirement::where('match_id', $matchId)->first();
+        // Check if judge is assigned and approved for this match
+        $judgeAssignment = $match->match_judges->first();
+        if (!$judgeAssignment) {
+            session()->flash('error', 'Вы не назначены на этот матч или ваше назначение не подтверждено.');
+            return;
+        }
+
+        // Get protocol requirement for this match and judge type
+        $requirement = ProtocolRequirement::where('match_id', $matchId)
+            ->where('judge_type_id', $judgeAssignment->type_id)
+            ->first();
 
         if (!$requirement) {
-            // Get requirement by league
+            // Get requirement by league and judge type
             $requirement = ProtocolRequirement::where('league_id', $match->league_id)
+                ->where('judge_type_id', $judgeAssignment->type_id)
+                ->whereNull('match_id')
                 ->orderBy('id', 'desc')
                 ->first();
         }
@@ -78,7 +92,7 @@ class MyProtocols extends Component
         } else {
             // Check if requirement exists
             if (!$requirement) {
-                session()->flash('error', 'Для этого матча не найдены требования к протоколу. Обратитесь к администратору.');
+                session()->flash('error', 'Для вашего типа судьи на этот матч не найдены требования к протоколу. Обратитесь к администратору.');
                 return;
             }
 
@@ -241,7 +255,10 @@ class MyProtocols extends Component
             $createMatches = MatchEntity::with([
                 'ownerClub', 'guestClub', 'stadium', 'league', 'season', 'operation',
                 'match_judges' => function($query) {
-                    $query->where('judge_id', auth()->id())->with('judge_type');
+                    $query->where('judge_id', auth()->id())
+                          ->where('judge_response', 1)
+                          ->where('final_status', 1)
+                          ->with('judge_type');
                 },
                 'protocols' => function($query) {
                     $query->where('judge_id', auth()->id());
@@ -251,7 +268,20 @@ class MyProtocols extends Component
                 $q->whereIn('value', ['waiting_for_protocol', 'protocol_reprocessing']);
             })
             ->whereHas('match_judges', function($q) {
-                $q->where('judge_id', auth()->id());
+                $q->where('judge_id', auth()->id())
+                  ->where('judge_response', 1)
+                  ->where('final_status', 1);
+            })
+            ->where(function($query) {
+                // Check if there are protocol requirements for this specific match
+                $query->whereHas('protocol_requirements', function($q) {
+                    $q->whereColumn('matches.id', 'protocol_requirements.match_id');
+                })
+                // Or check if there are protocol requirements for this league
+                ->orWhereHas('protocol_requirements', function($q) {
+                    $q->whereColumn('matches.league_id', 'protocol_requirements.league_id')
+                      ->whereNull('protocol_requirements.match_id');
+                });
             })
             ->orderBy('start_at', 'desc')
             ->get();
