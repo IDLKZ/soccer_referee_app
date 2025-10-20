@@ -16,7 +16,7 @@ class MyProtocols extends Component
 {
     use WithFileUploads;
 
-    public $activeTab = 'create'; // 'create', 'primary', 'final', 'all'
+    public $activeTab = 'create'; // 'create', 'rework', 'primary', 'final', 'all'
 
     // Protocol Form
     public $protocolForm = [
@@ -202,11 +202,27 @@ class MyProtocols extends Component
             ->where('judge_id', auth()->id())
             ->firstOrFail();
 
-        // Determine next operation based on first_status
-        if ($protocol->first_status == 0) {
+        // Determine next operation and update status based on current status
+        if ($protocol->first_status == -1) {
+            // Protocol rejected on primary approval, send back for primary approval
             $operationValue = 'primary_protocol_approval';
-        } elseif ($protocol->first_status == 1) {
+            $updateData = [
+                'first_status' => 0,
+            ];
+        } elseif ($protocol->first_status == 0) {
+            // New protocol, send for primary approval
+            $operationValue = 'primary_protocol_approval';
+            $updateData = [];
+        } elseif ($protocol->first_status == 1 && $protocol->final_status == -1) {
+            // Protocol rejected on final approval, send back for final approval
             $operationValue = 'control_protocol_approval';
+            $updateData = [
+                'final_status' => 0,
+            ];
+        } elseif ($protocol->first_status == 1) {
+            // Protocol passed primary, send for final approval
+            $operationValue = 'control_protocol_approval';
+            $updateData = [];
         } else {
             session()->flash('error', 'Невозможно отправить протокол на проверку');
             return;
@@ -214,10 +230,10 @@ class MyProtocols extends Component
 
         $operation = Operation::where('value', $operationValue)->firstOrFail();
 
-        $protocol->update([
-            'operation_id' => $operation->id,
-            'is_ready' => true,
-        ]);
+        $updateData['operation_id'] = $operation->id;
+        $updateData['is_ready'] = true;
+
+        $protocol->update($updateData);
 
         session()->flash('message', 'Протокол отправлен на проверку');
     }
@@ -247,6 +263,7 @@ class MyProtocols extends Component
     public function render()
     {
         $createMatches = collect();
+        $reworkProtocols = collect();
         $primaryProtocols = collect();
         $finalProtocols = collect();
         $allProtocols = collect();
@@ -301,6 +318,18 @@ class MyProtocols extends Component
             ->orderBy('start_at', 'desc')
             ->get();
 
+        } elseif ($this->activeTab === 'rework') {
+            // Protocols on rework (protocol_reprocessing)
+            $reworkProtocols = Protocol::with([
+                'match.ownerClub', 'match.guestClub', 'match.stadium', 'match.league', 'operation'
+            ])
+            ->where('judge_id', auth()->id())
+            ->whereHas('operation', function($q) {
+                $q->where('value', 'protocol_reprocessing');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         } elseif ($this->activeTab === 'primary') {
             // Primary approval protocols (view only)
             $primaryProtocols = Protocol::with([
@@ -339,6 +368,7 @@ class MyProtocols extends Component
 
         return view('livewire.referee.my-protocols', [
             'createMatches' => $createMatches,
+            'reworkProtocols' => $reworkProtocols,
             'primaryProtocols' => $primaryProtocols,
             'finalProtocols' => $finalProtocols,
             'allProtocols' => $allProtocols,

@@ -29,32 +29,40 @@
 
         <!-- Tabs Navigation -->
         <div class="mb-8">
-            <nav class="flex space-x-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2">
+            <nav class="flex space-x-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2">
                 <button wire:click="switchTab('create')"
-                        class="flex-1 px-6 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'create' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                        class="flex-1 px-4 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'create' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-plus-circle mr-2"></i>
-                    Создание протокола
+                    Создание
+                </button>
+                <button wire:click="switchTab('rework')"
+                        class="flex-1 px-4 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'rework' ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <i class="fas fa-redo mr-2"></i>
+                    Доработка
+                    @if($reworkProtocols->count() > 0)
+                        <span class="ml-2 bg-white/30 px-2 py-1 rounded-full text-xs">{{ $reworkProtocols->count() }}</span>
+                    @endif
                 </button>
                 <button wire:click="switchTab('primary')"
-                        class="flex-1 px-6 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'primary' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                        class="flex-1 px-4 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'primary' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-eye mr-2"></i>
-                    Первичное утверждение
+                    Первичное
                     @if($primaryProtocols->count() > 0)
                         <span class="ml-2 bg-white/30 px-2 py-1 rounded-full text-xs">{{ $primaryProtocols->count() }}</span>
                     @endif
                 </button>
                 <button wire:click="switchTab('final')"
-                        class="flex-1 px-6 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'final' ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                        class="flex-1 px-4 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'final' ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-check-double mr-2"></i>
-                    Финальное утверждение
+                    Финальное
                     @if($finalProtocols->count() > 0)
                         <span class="ml-2 bg-white/30 px-2 py-1 rounded-full text-xs">{{ $finalProtocols->count() }}</span>
                     @endif
                 </button>
                 <button wire:click="switchTab('all')"
-                        class="flex-1 px-6 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'all' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                        class="flex-1 px-4 py-4 rounded-lg font-semibold transition-all {{ $activeTab === 'all' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-xl transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-archive mr-2"></i>
-                    Все протоколы
+                    Все
                     @if($allProtocols->count() > 0)
                         <span class="ml-2 bg-white/30 px-2 py-1 rounded-full text-xs">{{ $allProtocols->count() }}</span>
                     @endif
@@ -160,7 +168,114 @@
                 </div>
             @endif
 
-            <!-- Tab 2: Primary Approval (View Only) -->
+            <!-- Tab 2: Rework Protocols -->
+            @if($activeTab === 'rework')
+                <div class="space-y-6">
+                    @if($reworkProtocols->count() > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach($reworkProtocols as $protocol)
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700">
+                                    <!-- Card Header -->
+                                    <div class="bg-gradient-to-r from-red-500 to-orange-500 p-5 text-white">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-xs font-bold uppercase tracking-wider bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full">
+                                                {{ $protocol->match->league->title_ru ?? 'Лига' }}
+                                            </span>
+                                            <span class="text-xs bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                                                #{{ $protocol->id }}
+                                            </span>
+                                        </div>
+                                        <h3 class="text-lg font-bold leading-tight">
+                                            {{ $protocol->match->ownerClub->short_name_ru ?? $protocol->match->ownerClub->title_ru }}
+                                            <span class="mx-2 text-white/70">vs</span>
+                                            {{ $protocol->match->guestClub->short_name_ru ?? $protocol->match->guestClub->title_ru }}
+                                        </h3>
+                                    </div>
+
+                                    <!-- Card Body -->
+                                    <div class="p-5 space-y-3">
+                                        <div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                                            <i class="fas fa-calendar-alt w-5 mr-2 text-red-500"></i>
+                                            <span>{{ \Carbon\Carbon::parse($protocol->match->start_at)->format('d.m.Y H:i') }}</span>
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                                            <i class="fas fa-map-marker-alt w-5 mr-2 text-red-500"></i>
+                                            <span>{{ $protocol->match->stadium->title_ru ?? 'Стадион' }}</span>
+                                        </div>
+
+                                        <!-- Rejection Status -->
+                                        @if($protocol->first_status == -1)
+                                            <div class="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                                <div class="flex items-center text-sm text-red-800 dark:text-red-400 mb-2">
+                                                    <i class="fas fa-times-circle mr-2"></i>
+                                                    <span class="font-semibold">Отклонено на первичной проверке</span>
+                                                </div>
+                                                @if($protocol->comment)
+                                                    <p class="text-xs text-gray-700 dark:text-gray-300 mt-2">{{ $protocol->comment }}</p>
+                                                @endif
+                                            </div>
+                                        @elseif($protocol->final_status == -1)
+                                            <div class="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                                <div class="flex items-center text-sm text-red-800 dark:text-red-400 mb-2">
+                                                    <i class="fas fa-times-circle mr-2"></i>
+                                                    <span class="font-semibold">Отклонено на финальной проверке</span>
+                                                </div>
+                                                @if($protocol->final_comment)
+                                                    <p class="text-xs text-gray-700 dark:text-gray-300 mt-2">{{ $protocol->final_comment }}</p>
+                                                @endif
+                                            </div>
+                                        @endif
+
+                                        @if($protocol->file_url)
+                                            <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                                <a href="{{ asset('storage/' . $protocol->file_url) }}" target="_blank"
+                                                   class="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center">
+                                                    <i class="fas fa-paperclip mr-1"></i>
+                                                    Просмотреть текущий файл
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Card Footer -->
+                                    <div class="px-5 pb-5 flex gap-2">
+                                        <button wire:click="openProtocolModal({{ $protocol->match_id }})"
+                                                class="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all shadow-md hover:shadow-xl font-semibold">
+                                            <i class="fas fa-edit mr-2"></i>
+                                            Редактировать
+                                        </button>
+
+                                        <button wire:click="submitForApproval({{ $protocol->id }})"
+                                                wire:confirm="Вы уверены, что хотите отправить протокол на проверку?"
+                                                class="px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all shadow-md hover:shadow-xl">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+
+                                        <button wire:click="openViewModal({{ $protocol->id }})"
+                                                class="px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all shadow-md hover:shadow-xl">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-16 text-center">
+                            <div class="text-gray-300 dark:text-gray-600 mb-6">
+                                <i class="fas fa-redo text-8xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-3">
+                                Нет протоколов на доработке
+                            </h3>
+                            <p class="text-base text-gray-500 dark:text-gray-400">
+                                У вас нет отклонённых протоколов, требующих доработки
+                            </p>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            <!-- Tab 3: Primary Approval (View Only) -->
             @if($activeTab === 'primary')
                 <div class="space-y-6">
                     @if($primaryProtocols->count() > 0)
