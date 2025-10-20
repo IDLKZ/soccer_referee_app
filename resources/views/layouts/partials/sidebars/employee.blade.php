@@ -9,6 +9,103 @@
                 <span class="ml-3">Главная</span>
             </a>
 
+            <!-- Business Processes -->
+            <div class="pt-4">
+                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Бизнес процессы
+                </p>
+            </div>
+
+            @can('manage-matches')
+                <a href="{{ route('match-entity-management') }}"
+                   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('match-entity-management*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center">
+                        <i class="fas fa-futbol w-5"></i>
+                        <span class="ml-3">Управление матчами</span>
+                    </div>
+                </a>
+            @endcan
+
+            @can('assign-referees')
+                @php
+                    $assignmentCount = \App\Models\MatchEntity::whereHas('operation', function($q) {
+                        $q->whereIn('value', ['match_created_waiting_referees', 'referee_team_approval', 'referee_reassignment']);
+                    })->count();
+                @endphp
+                <a href="{{ route('match-assignment-cards') }}"
+                   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('match-assignment-cards*') || request()->routeIs('match-assignment-detail*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center">
+                        <i class="fas fa-user-tie w-5"></i>
+                        <span class="ml-3">Назначение судей на матч</span>
+                    </div>
+                    @if($assignmentCount > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {{ $assignmentCount }}
+                        </span>
+                    @endif
+                </a>
+            @endcan
+
+            @can('manage-referees')
+                @php
+                    $tripCount = \App\Models\Trip::whereHas('operation', function($q) {
+                        $q->where('value', 'primary_business_trip_confirmation');
+                    })->count();
+                @endphp
+                <a href="{{ route('primary-business-trip-confirmation') }}"
+                   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('primary-business-trip-confirmation') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center">
+                        <i class="fas fa-clipboard-check w-5"></i>
+                        <span class="ml-3">Первичная проверка командировки</span>
+                    </div>
+                    @if($tripCount > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {{ $tripCount }}
+                        </span>
+                    @endif
+                </a>
+            @endcan
+
+            @can('approve-primary-protocols')
+                @php
+                    $protocolCount = \App\Models\Protocol::whereHas('operation', function($q) {
+                        $q->where('value', 'primary_protocol_approval');
+                    })->count();
+                @endphp
+                <a href="{{ route('primary-protocol-approval') }}"
+                   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('primary-protocol-approval') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center">
+                        <i class="fas fa-clipboard-check w-5"></i>
+                        <span class="ml-3">Первичная проверка протоколов</span>
+                    </div>
+                    @if($protocolCount > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {{ $protocolCount }}
+                        </span>
+                    @endif
+                </a>
+            @endcan
+
+            @can('avr-processing')
+                @php
+                    $avrCount = \App\Models\ActOfWork::whereHas('operation', function($q) {
+                        $q->whereIn('value', ['avr_created_waiting_processing', 'avr_processing', 'avr_reprocessing']);
+                    })->count();
+                @endphp
+                <a href="{{ route('avr-processing') }}"
+                   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('avr-processing') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center">
+                        <i class="fas fa-file-invoice w-5"></i>
+                        <span class="ml-3">Управление АВР</span>
+                    </div>
+                    @if($avrCount > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {{ $avrCount }}
+                        </span>
+                    @endif
+                </a>
+            @endcan
+
             <!-- Club Management -->
             <div class="pt-4">
                 <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
@@ -71,42 +168,11 @@
                 </a>
             @endcan
 
-            @can('manage-matches')
-                <a href="{{ route('match-entity-management') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('match-entity-management*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-futbol w-5"></i>
-                    <span class="ml-3">Управление матчами</span>
-                </a>
-            @endcan
-
-            @can('assign-referees')
-                <a href="{{ route('match-assignment-cards') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('match-assignment-cards*') || request()->routeIs('match-assignment-detail*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-user-tie w-5"></i>
-                    <span class="ml-3">Назначение судей на матч</span>
-                </a>
-            @endcan
-
             @can('manage-common-services')
                 <a href="{{ route('common-services') }}"
                    class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('common-services*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-briefcase w-5"></i>
                     <span class="ml-3">Типы работ (АВР)</span>
-                </a>
-            @endcan
-
-            <!-- Business Trips -->
-            <div class="pt-4">
-                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Командировки
-                </p>
-            </div>
-
-            @can('manage-referees')
-                <a href="{{ route('primary-business-trip-confirmation') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('primary-business-trip-confirmation') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-clipboard-check w-5"></i>
-                    <span class="ml-3">Первичная проверка</span>
                 </a>
             @endcan
 
@@ -122,22 +188,6 @@
                    class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('referee.my-protocols') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-file-alt w-5"></i>
                     <span class="ml-3">Загрузка протоколов</span>
-                </a>
-            @endcan
-
-            @can('approve-primary-protocols')
-                <a href="{{ route('primary-protocol-approval') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('primary-protocol-approval') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-clipboard-check w-5"></i>
-                    <span class="ml-3">Первичная проверка протоколов</span>
-                </a>
-            @endcan
-
-            @can('avr-processing')
-                <a href="{{ route('avr-processing') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('avr-processing') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-file-invoice w-5"></i>
-                    <span class="ml-3">Управление АВР</span>
                 </a>
             @endcan
 
