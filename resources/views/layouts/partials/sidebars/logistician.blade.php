@@ -9,7 +9,54 @@
                 <span class="ml-3">Главная</span>
             </a>
 
-                      <!-- Geography Management -->
+            <!-- Business Processes -->
+            <div class="pt-4">
+                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Бизнес процессы
+                </p>
+            </div>
+
+            @can('manage-logistics')
+                @php
+                    // Сначала пытаемся найти матчи с нужными операциями
+                    $matchCount = \App\Models\MatchEntity::whereHas('operation', function($q) {
+                        $q->whereIn('value', [
+                            'select_transport_departure',
+                            'business_trip_plan_preparation',
+                            'business_trip_registration',
+                            'business_trip_plan_reprocessing'
+                        ]);
+                    })->count();
+
+                    // Если матчей нет (count = 0), ищем поездки с теми же операциями
+                    if ($matchCount == 0) {
+                        $tripCount = \App\Models\Trip::whereHas('operation', function($q) {
+                            $q->whereIn('value', [
+                                'select_transport_departure',
+                                'business_trip_plan_preparation',
+                                'business_trip_plan_reprocessing'
+                            ]);
+                        })->count();
+                        $businessTripCount = $tripCount;
+                    } else {
+                        $businessTripCount = $matchCount;
+                    }
+                @endphp
+                <a href="{{ route('business-trip-cards') }}"
+                   class="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('business-trip*') ? 'bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                    <div class="flex items-center">
+                        <i class="fas fa-route w-5"></i>
+                        <span class="ml-3">Управление командировками</span>
+                    </div>
+                    @if($businessTripCount > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {{ $businessTripCount }}
+                        </span>
+                    @endif
+                </a>
+            @endcan
+
+            <!-- Geography Management -->
             <div class="pt-4">
                 <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                     География
@@ -76,21 +123,6 @@
                    class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('transport-types*') ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-bus w-5"></i>
                     <span class="ml-3">Тип транспорта</span>
-                </a>
-            @endcan
-
-            <!-- Business Trips -->
-            <div class="pt-4">
-                <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Командировки
-                </p>
-            </div>
-
-            @can('manage-logistics')
-                <a href="{{ route('business-trip-cards') }}"
-                   class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('business-trip*') ? 'bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-plane-departure w-5"></i>
-                    <span class="ml-3">Управление командировками</span>
                 </a>
             @endcan
         </nav>
