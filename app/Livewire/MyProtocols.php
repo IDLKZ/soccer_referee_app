@@ -6,6 +6,7 @@ use App\Models\MatchEntity;
 use App\Models\Protocol;
 use App\Models\ProtocolRequirement;
 use App\Models\Operation;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Title;
@@ -273,14 +274,28 @@ class MyProtocols extends Component
                   ->where('final_status', 1);
             })
             ->where(function($query) {
-                // Check if there are protocol requirements for this specific match
-                $query->whereHas('protocol_requirements', function($q) {
-                    $q->whereColumn('matches.id', 'protocol_requirements.match_id');
-                })
-                // Or check if there are protocol requirements for this league
-                ->orWhereHas('protocol_requirements', function($q) {
-                    $q->whereColumn('matches.league_id', 'protocol_requirements.league_id')
-                      ->whereNull('protocol_requirements.match_id');
+                // Check if there are protocol requirements for this judge's type
+                // First, try to find requirements for this specific match and judge type
+                $query->whereExists(function($subQuery) {
+                    $subQuery->select(\DB::raw(1))
+                        ->from('protocol_requirements')
+                        ->join('match_judges', function($join) {
+                            $join->on('protocol_requirements.judge_type_id', '=', 'match_judges.type_id')
+                                ->where('match_judges.judge_id', auth()->id())
+                                ->where('match_judges.judge_response', 1)
+                                ->where('match_judges.final_status', 1);
+                        })
+                        ->whereColumn('match_judges.match_id', 'matches.id')
+                        ->where(function($req) {
+                            // For specific match
+                            $req->whereColumn('protocol_requirements.match_id', 'matches.id')
+                                // Or for league (when match_id is null)
+                                ->orWhere(function($leagueReq) {
+                                    $leagueReq->whereColumn('protocol_requirements.league_id', 'matches.league_id')
+                                        ->whereNull('protocol_requirements.match_id');
+                                });
+                        })
+                        ->whereNull('protocol_requirements.deleted_at');
                 });
             })
             ->orderBy('start_at', 'desc')
